@@ -3,9 +3,9 @@
 
 1. Main
 2. Person(firstName, lastName, email, phoneNumber)
-    2. Worker(jobName, salary)
-        3. Courier(meanOfTransport)
-    3. Customer()
+    1. Worker(jobName, salary)
+        1. Courier(meanOfTransport)
+    2. Customer()
 3. Establishment(name, address, type, description)
 4. MenuItem(name, price)
 5. Order(customer, date, menuItems[], establishment)

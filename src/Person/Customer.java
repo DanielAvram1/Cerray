@@ -1,6 +1,4 @@
-package Persons;
-
-import java.io.PrintStream;
+package Person;
 
 public class Customer extends Person {
 
@@ -18,4 +16,13 @@ public class Customer extends Person {
         this.phoneNumber = phoneNumber;
     }
 
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }

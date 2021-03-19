@@ -19,3 +19,7 @@
 
 # TO DO
 - [ ] De adaugat parametri in plus pentru clasa Customer
+
+# NELAMURIRI
+- [ ] Ce ar trebui sa faca o clasa Service
+- [ ] Cum de accesat campurile private a claselor componente (menuItemList in Order in OrderService, cum sa adaugi un nou menuItem prin OrderService )

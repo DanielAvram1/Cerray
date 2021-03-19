@@ -19,6 +19,7 @@
 
 # TO DO
 - [ ] De adaugat parametri in plus pentru clasa Customer
+- [ ] De adaugat functionalitatea la clasele Service
 
 # NELAMURIRI
 - [ ] Ce ar trebui sa faca o clasa Service

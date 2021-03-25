@@ -1,7 +1,7 @@
 package Delivery;
 
 import Order.Order;
-import Person.Courier;
+import Account.Courier;
 
 public class Delivery {
     Order order;

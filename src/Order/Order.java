@@ -1,8 +1,8 @@
 package Order;
 
-import Establishment.Establishment;
+import Account.Establishment;
 import MenuItem.MenuItem;
-import Person.Customer;
+import Account.Customer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +13,14 @@ public class Order {
     Date date;
     List<MenuItem> menuItemList;
     Establishment establishment;
+    boolean delivered;
 
     public Order(Customer customer, Date date, List<MenuItem> menuItemList, Establishment establishment) {
         this.customer = customer;
         this.date = date;
         this.menuItemList = menuItemList;
         this.establishment = establishment;
+        this.delivered = false;
     }
 
     public Customer getCustomer() {

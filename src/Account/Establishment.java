@@ -1,16 +1,24 @@
-package Establishment;
+package Account;
 
-public class Establishment {
+import MenuItem.MenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Establishment extends Account{
     private String name;
     private String address;
     private String type;
     private String description;
+    private List<MenuItem> menu;
 
-    public Establishment(String name, String address, String type, String description) {
+    public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, List<MenuItem> menu) {
+        super(email, phoneNumber, password);
         this.name = name;
         this.address = address;
         this.type = type;
         this.description = description;
+        this.menu = new ArrayList<MenuItem>(menu);
     }
 
 
@@ -45,6 +53,20 @@ public class Establishment {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
+    public List<MenuItem> getMenu() {
+        return menu;
+    }
+
+    public void setMenu(List<MenuItem> menu) {
+        this.menu = menu;
+    }
+
+    public void addMenuItem(MenuItem menuItem) {
+        this.menu.add(menuItem);
+    }
+
 
     @Override
     public String toString() {

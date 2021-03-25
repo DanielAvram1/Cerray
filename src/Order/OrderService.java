@@ -11,11 +11,12 @@ public class OrderService {
         this.order = order;
     }
 
-    // NOTE: pare o metoda prea intortocheata pentru a adauga un element nou in lista
-    // ar trebui sa fie un mod de accesare directa a unei clase componenta
     public void addMenuItem(MenuItem menuItem) {
-        List<MenuItem> newMenuItemList = this.order.getMenuItemList();
-        newMenuItemList.add(menuItem);
-        order.setMenuItemList(newMenuItemList);
+        this.order.menuItemList.add(menuItem);
     }
+
+    public void setDelivered() {
+        this.order.delivered = !this.order.delivered;
+    }
+
 }

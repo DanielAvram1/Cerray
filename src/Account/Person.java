@@ -1,13 +1,18 @@
-package Person;
+package Account;
 
-public abstract class Person {
+public abstract class Person extends Account{
 
     static int nrPersons = 0;
 
     protected String firstName;
     protected String lastName;
-    protected String email;
-    protected String phoneNumber;
+
+    public Person(String email, String phoneNumber, String password, String firstName, String lastName) {
+        super(email, phoneNumber, password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
 
     public void setFirstName(String firstName){
         this.firstName = firstName;
@@ -22,20 +27,5 @@ public abstract class Person {
     String getLastName(){
         return this.lastName;
     }
-
-    void setEmail(String email){
-        this.email = email;
-    }
-    String getEmail(){
-        return this.email;
-    }
-
-    void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-    String getPhoneNumber() {
-        return this.phoneNumber;
-    }
-
 
 }

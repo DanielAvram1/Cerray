@@ -1,10 +1,14 @@
 package Delivery;
 
+import Account.Customer;
+import Account.Establishment;
 import Order.Order;
 import Account.Courier;
 
 public class Delivery {
     Order order;
+    Customer customer;
+    Establishment establishment;
     Courier courier;
 
 
@@ -29,10 +33,13 @@ public class Delivery {
         this.courier = courier;
     }
 
+
     @Override
     public String toString() {
         return "Delivery{" +
                 "order=" + order +
+                ", customer=" + customer +
+                ", establishment=" + establishment +
                 ", courier=" + courier +
                 '}';
     }

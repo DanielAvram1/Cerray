@@ -11,10 +11,6 @@ public class OrderService {
         this.order = order;
     }
 
-    public void addMenuItem(MenuItem menuItem) {
-        this.order.menuItemList.add(menuItem);
-    }
-
     public void setDelivered() {
         this.order.delivered = !this.order.delivered;
     }

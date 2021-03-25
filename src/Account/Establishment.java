@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Establishment extends Account{
-    private String name;
-    private String address;
-    private String type;
-    private String description;
-    private List<MenuItem> menu;
+    String name;
+    String address;
+    String type;
+    String description;
+    List<MenuItem> menu;
 
     public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, List<MenuItem> menu) {
         super(email, phoneNumber, password);

@@ -9,11 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DB {
-    public List<Establishment> establishmentList;
-    public List<Customer> customerList;
-    public List<Courier> courierList;
 
-    public DB() {
+    private static DB single_instance = null;
+
+    public static List<Establishment> establishmentList;
+    public static List<Customer> customerList;
+    public static List<Courier> courierList;
+
+    private DB() {
+
+        establishmentList = new ArrayList<>();
+        customerList = new ArrayList<>();
+        courierList = new ArrayList<>();
 
         List<MenuItem> menuMcDonalds = new ArrayList<MenuItem>();
 
@@ -45,9 +52,9 @@ public class DB {
         MenuItem cheesecake = new MenuItem("Cheesecake", 40);
         MenuItem gingerTea = new MenuItem("Ginger Tea", 30);
 
-        menuTucano.add(placintaCuBranza);
-        menuTucano.add(mamaliga);
-        menuTucano.add(vinRosu);
+        menuTucano.add(cappuccino);
+        menuTucano.add(cheesecake);
+        menuTucano.add(gingerTea);
 
         Establishment tucano = new Establishment("tucano@gmail.com", "030303", "parolatucano","Tucano Coffee", "Bodoni 10", "cafenea", "scump", menuTucano);
 
@@ -72,5 +79,19 @@ public class DB {
         courierList.add(laura);
 
     }
+
+    public static void displayEstablishments() {
+        for(int i = 0; i < establishmentList.size(); i++) {
+            System.out.println(String.format("%x:\t%s", i + 1, establishmentList.get(i).getName()));
+        }
+    }
+
+    public static DB getInstance() {
+        if (single_instance == null)
+            single_instance = new DB();
+        return single_instance;
+    }
+
+
 
 }

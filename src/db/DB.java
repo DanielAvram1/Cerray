@@ -12,9 +12,9 @@ public class DB {
 
     private static DB single_instance = null;
 
-    public static List<Establishment> establishmentList;
-    public static List<Customer> customerList;
-    public static List<Courier> courierList;
+    public List<Establishment> establishmentList;
+    public List<Customer> customerList;
+    public List<Courier> courierList;
 
     private DB() {
 
@@ -24,9 +24,9 @@ public class DB {
 
         List<MenuItem> menuMcDonalds = new ArrayList<MenuItem>();
 
-        MenuItem cheeseburger = new MenuItem("Cheeseburger", 20);
-        MenuItem chickenNuggets = new MenuItem("Chicken Nuggets", 30);
-        MenuItem cola = new MenuItem("Cola", 15);
+        MenuItem cheeseburger = new MenuItem("Cheeseburger", 20,100);
+        MenuItem chickenNuggets = new MenuItem("Chicken Nuggets", 30,100);
+        MenuItem cola = new MenuItem("Cola", 15, 100);
 
         menuMcDonalds.add(cheeseburger);
         menuMcDonalds.add(chickenNuggets);
@@ -36,9 +36,9 @@ public class DB {
 
         List<MenuItem> menuLaPlacinte = new ArrayList<MenuItem>();
 
-        MenuItem placintaCuBranza = new MenuItem("Placinta cu branza", 25);
-        MenuItem mamaliga = new MenuItem("Mamaliga", 20);
-        MenuItem vinRosu = new MenuItem("Vin Rosu", 35);
+        MenuItem placintaCuBranza = new MenuItem("Placinta cu branza", 25, 100);
+        MenuItem mamaliga = new MenuItem("Mamaliga", 20, 100);
+        MenuItem vinRosu = new MenuItem("Vin Rosu", 35, 100);
 
         menuLaPlacinte.add(placintaCuBranza);
         menuLaPlacinte.add(mamaliga);
@@ -48,9 +48,9 @@ public class DB {
 
         List<MenuItem> menuTucano = new ArrayList<MenuItem>();
 
-        MenuItem cappuccino = new MenuItem("Cappuccino", 25);
-        MenuItem cheesecake = new MenuItem("Cheesecake", 40);
-        MenuItem gingerTea = new MenuItem("Ginger Tea", 30);
+        MenuItem cappuccino = new MenuItem("Cappuccino", 25, 100);
+        MenuItem cheesecake = new MenuItem("Cheesecake", 40, 100);
+        MenuItem gingerTea = new MenuItem("Ginger Tea", 30, 100);
 
         menuTucano.add(cappuccino);
         menuTucano.add(cheesecake);
@@ -80,7 +80,7 @@ public class DB {
 
     }
 
-    public static void displayEstablishments() {
+    public void displayEstablishments() {
         for(int i = 0; i < establishmentList.size(); i++) {
             System.out.println(String.format("%x:\t%s", i + 1, establishmentList.get(i).getName()));
         }

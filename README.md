@@ -26,6 +26,7 @@ Cerray este o aplicatie la nivel de consola care va permite proprietarilor de lo
 - [ ] De adaugat functionalitatea la clasele Service
 - [ ] De adaugat autentificarea pentru Worker si Establishment
 - [ ] De adaugat subclase pentru Worker, ca Administrator, de ex
+- [ ] De adaugat restul functionalitatii la EstablishmentService
 # NELAMURIRI
 - [ ] Ce ar trebui sa faca o clasa Service
 - [ ] Cum de accesat campurile private a claselor componente (menuItemList in Order in OrderService, cum sa adaugi un nou menuItem prin OrderService )

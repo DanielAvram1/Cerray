@@ -3,10 +3,13 @@ package MenuItem;
 public class MenuItem {
     String name;
     double price;
+    int quantity;
 
-    public MenuItem(String name, double price) {
+
+    public MenuItem(String name, double price, int quantity) {
         this.name = name;
         this.price = price;
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -24,6 +27,15 @@ public class MenuItem {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
 
     @Override
     public String toString() {

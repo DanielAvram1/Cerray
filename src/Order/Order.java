@@ -1,22 +1,18 @@
 package Order;
 
-import Account.Establishment;
 import MenuItem.MenuItem;
-import MenuItem.MenuItemQuantity;
-import Account.Customer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Order {
     Date date;
-    List<MenuItemQuantity> menuItemQuantityList;
+    List<MenuItem> menuItemList;
     boolean delivered;
 
-    public Order(Date date, List<MenuItemQuantity> menuItemQuantityList) {
+    public Order(Date date, List<MenuItem> menuItemList) {
         this.date = date;
-        this.menuItemQuantityList = menuItemQuantityList;
+        this.menuItemList = menuItemList;
         this.delivered = false;
     }
 
@@ -33,7 +29,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 ", date=" + date +
-                ", menuItemList=" + menuItemQuantityList +
+                ", menuItemList=" + menuItemList +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package Account;
 
 import MenuItem.MenuItem;
+import MenuItem.MenuItemService;
 import Order.Order;
 import db.DB;
 
@@ -56,7 +57,7 @@ public class EstablishmentService {
     public void displayMenu() {
         List<MenuItem> menu = establishment.menu;
         for(int i = 0; i < menu.size(); i++) {
-            System.out.println(String.format("%x:\t%s\t%f", i + 1, menu.get(i).getName(), menu.get(i).getPrice(), menu.get(i).getQuantity()));
+            System.out.println(String.format("%x:\t%s\t%f\t%x", i + 1, menu.get(i).getName(), menu.get(i).getPrice(), menu.get(i).getQuantity()));
         }
     }
 
@@ -64,6 +65,7 @@ public class EstablishmentService {
         displayMenu();
 
         List<MenuItem> menu = establishment.menu;
+        List<MenuItem> newMenu = new ArrayList<MenuItem>(menu);
 
         List<MenuItem> orderItems = new ArrayList<>();
         double cost = 0;
@@ -86,9 +88,8 @@ public class EstablishmentService {
                 quan = 1;
 
                 if(args.length == 2) {
-                    idx = Integer.parseInt(args[0]);
                     quan = Integer.parseInt(args[1]);
-                    if(quan < 1 || quan > 5000) throw new Exception("prea mic sau mare cantitatea!");
+                    if(quan < 1 || quan > newMenu.get(idx - 1).getQuantity()) throw new Exception("prea mica sau mare cantitatea!");
                 }
 
                 cost += menu.get(idx - 1).getPrice() * quan;
@@ -96,9 +97,10 @@ public class EstablishmentService {
                 MenuItem orderItem = new MenuItem(menu.get(idx - 1).getName(), menu.get(idx - 1).getPrice(), quan);
                 orderItems.add(orderItem);
 
+                newMenu.get(idx - 1).addQuantity(-quan);
 
             } catch(Exception e) {
-                System.out.println(e.getMessage() + "; pentru a termina, scrieti done");
+                System.out.println( "Ati introdus numerele gresit; pentru a termina, scrieti done");
             }
         }
         System.out.println("Costul comenzii: " + cost);
@@ -106,6 +108,8 @@ public class EstablishmentService {
         input = in.readLine();
         if(input.equals("N"))
             return null;
+        establishment.menu = newMenu;
+        establishment.income += cost;
         return new Order(new Date(), orderItems);
 
     }
@@ -260,6 +264,62 @@ public class EstablishmentService {
 
     }
 
+    public void deleteMenuItem() throws Exception{
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        displayMenu();
+        List<MenuItem> menu = establishment.menu;
+
+        int idx = 0;
+
+        while(true) {
+            try{
+                String input = in.readLine();
+                idx = Integer.parseInt(input);
+                if(idx < 1 || idx > menu.size()) {
+                    System.out.println("Indexul e prea mic sau prea mare!");
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println("Ati introdus indexul gresit!");
+            }
+        }
+
+        menu.remove(idx - 1);
+
+
+    }
+
+    public void editMenu() throws Exception{
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Alegeti indexul produsului pe care doriti sa il modificati:");
+        displayMenu();
+
+        List<MenuItem> menu = establishment.menu;
+
+        int idx = 0;
+
+        while(true) {
+            try{
+                String input = in.readLine();
+                idx = Integer.parseInt(input);
+                if(idx < 1 || idx > menu.size()) {
+                    System.out.println("Indexul e prea mic sau prea mare!");
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println("Ati introdus indexul gresit!");
+            }
+        }
+        MenuItemService.editMenuItem(menu.get(idx - 1));
+
+    }
+
+
     public void session() throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -281,8 +341,7 @@ public class EstablishmentService {
                     break;
                 }
                 case "back" :{
-                    contSession = false;
-                    break;
+                    return;
                 }
 
                 default: {
@@ -295,7 +354,7 @@ public class EstablishmentService {
         contSession = true;
 
         while(contSession) {
-            System.out.println("display_menu\tadd_item\tedit_menu\tback");
+            System.out.println("display_menu\tadd_item\tdelete_item\tedit_menu\tincome\tback");
             String input = in.readLine();
             switch (input) {
                 case "display_menu" : {
@@ -306,17 +365,25 @@ public class EstablishmentService {
                 }
                 case "add_item" : {
 
-                    this.addMenuItem();
+                    addMenuItem();
+                    break;
+                }
+                case "delete_item" : {
+
+                    deleteMenuItem();
                     break;
                 }
                 case "edit_menu" : {
 
-                    contSession = false;
+                    editMenu();
+                    break;
+                }
+                case "income" :{
+                    System.out.println("Current Income: " + establishment.income);
                     break;
                 }
                 case "back" :{
-                    contSession = false;
-                    break;
+                    return;
                 }
 
                 default: {
@@ -324,7 +391,5 @@ public class EstablishmentService {
                 }
             }
         }
-
     }
-
 }

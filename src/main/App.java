@@ -20,46 +20,37 @@ public class App {
 
         System.out.println("Bun venit in Cerray! Introduceti entitatea pe care o reprezentati:");
 
-        boolean cont = true;
-        while(cont) {
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            boolean contMainSession = true;
+            while(contMainSession) {
+                System.out.println("customer\tcourier\testablishment\texit");
+                String input = in.readLine();
+                switch (input) {
+                    case "customer" : {
+                        CustomerService customerService = new CustomerService();
+                        customerService.session();
+                        break;
+                    }
+                    case "courier" : {
+                        break;
+                    }
+                    case "establishment" :{
+                        EstablishmentService establishmentService = new EstablishmentService();
+                        establishmentService.session();
+                        break;
+                    }
+                    case "exit" :{
+                        return;
+                    }
 
-            System.out.println("customer\tcourier\testablishment\texit");
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                boolean contMainSession = true;
-                while(contMainSession) {
-                    String input = in.readLine();
-                    switch (input) {
-                        case "customer" : {
-                            CustomerService customerService = new CustomerService();
-                            customerService.session();
-                            break;
-                        }
-                        case "courier" : {
-                            break;
-                        }
-                        case "establishment" :{
-                            EstablishmentService establishmentService = new EstablishmentService();
-                            establishmentService.session();
-                            break;
-                        }
-                        case "exit" :{
-                            return;
-                        }
-
-                        default: {
-                            System.out.println("Ati introdus comanda gresit!");
-                        }
+                    default: {
+                        System.out.println("Ati introdus comanda gresit!");
                     }
                 }
-
-
-
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
             }
-
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 }

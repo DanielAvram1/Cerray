@@ -11,6 +11,7 @@ public class Establishment extends Account{
     String type;
     String description;
     List<MenuItem> menu;
+    double income;
 
     public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, List<MenuItem> menu) {
         super(email, phoneNumber, password);
@@ -19,6 +20,7 @@ public class Establishment extends Account{
         this.type = type;
         this.description = description;
         this.menu = new ArrayList<MenuItem>(menu);
+        income = 0;
     }
 
 

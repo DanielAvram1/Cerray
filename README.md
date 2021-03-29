@@ -10,7 +10,7 @@ Cerray este o aplicatie la nivel de consola care va permite proprietarilor de lo
         1. Worker(jobName, salary)
             1. Courier(meanOfTransport)
         2. Customer()
-    2. Establishment(name, address, type, description)
+    2. Establishment(name, address, type, description, income = 0)
 3. MenuItem(name, price)
 4. Order(customer, date, menuItems[], establishment)
 5. Delivery(order, customer, establishment, courier)
@@ -22,11 +22,12 @@ Cerray este o aplicatie la nivel de consola care va permite proprietarilor de lo
 11. DeliveryService
 
 # TO DO
-- [ ] De adaugat parametri in plus pentru clasa Customer
+- [x] De adaugat parametri in plus pentru clasa Customer
 - [ ] De adaugat functionalitatea la clasele Service
 - [ ] De adaugat autentificarea pentru Worker si Establishment
 - [ ] De adaugat subclase pentru Worker, ca Administrator, de ex
-- [ ] De adaugat restul functionalitatii la EstablishmentService
+- [x] De adaugat restul functionalitatii la EstablishmentService
+- [ ] De afisat quantity nu in forma hexazecimala
 # NELAMURIRI
 - [ ] Ce ar trebui sa faca o clasa Service
 - [ ] Cum de accesat campurile private a claselor componente (menuItemList in Order in OrderService, cum sa adaugi un nou menuItem prin OrderService )

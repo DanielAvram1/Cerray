@@ -12,6 +12,12 @@ public class MenuItem {
         this.quantity = quantity;
     }
 
+    public MenuItem(MenuItem menuItem) {
+        name = menuItem.getName();
+        price = menuItem.getPrice();
+        quantity = menuItem.getQuantity();
+    }
+
     public String getName() {
         return name;
     }
@@ -36,6 +42,9 @@ public class MenuItem {
         this.quantity = quantity;
     }
 
+    public void addQuantity(int quantity) {
+        this.quantity += quantity;
+    }
 
     @Override
     public String toString() {

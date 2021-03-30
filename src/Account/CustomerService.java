@@ -29,12 +29,15 @@ public class CustomerService {
             System.out.print("Nume: ");
             String lastName = in.readLine();
 
+            System.out.print("Adresa: ");
+            String defaultAddress = in.readLine();
+
             System.out.println("Ati introdus toate informatiile necesare. Confirmati inregistrarea? Y/N");
 
             String input = in.readLine();
             if(input.equals("N")) break;
 
-            Customer customer = new Customer(account, firstName, lastName);
+            Customer customer = new Customer(account, firstName, lastName, defaultAddress);
             accountList.add(customer);
 
             System.out.println("Bun venit in Cerray! Sunteti un Customer inregistrat!");
@@ -57,7 +60,7 @@ public class CustomerService {
             switch (input) {
                 case "order" : {
 
-                    Order order = EstablishmentService.chooseEstablishment();
+                    Order order = EstablishmentService.chooseEstablishment(this.customer);
 
                     if(order != null) {
                         this.customer.addOrder(order);

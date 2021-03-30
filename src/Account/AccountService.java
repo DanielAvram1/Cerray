@@ -69,7 +69,7 @@ public class AccountService {
                     return EstablishmentService.register(account);
                 }
                 case "courier":{
-                    break;
+                    return CourierService.register(account);
                 }
                 case "cancel":{
                     return null;

@@ -1,5 +1,6 @@
 package Order;
 
+import Account.Customer;
 import MenuItem.MenuItem;
 
 import java.util.Date;
@@ -7,12 +8,16 @@ import java.util.List;
 
 public class Order {
     Date date;
+    String address;
     List<MenuItem> menuItemList;
+    Customer receiver;
     boolean delivered;
 
-    public Order(Date date, List<MenuItem> menuItemList) {
+    public Order(Date date, String address, Customer customer, List<MenuItem> menuItemList) {
         this.date = date;
         this.menuItemList = menuItemList;
+        this.address = address;
+        this.receiver = customer;
         this.delivered = false;
     }
 
@@ -27,9 +32,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                ", date=" + date +
-                ", menuItemList=" + menuItemList +
-                '}';
+        return "Address:" + address + "\tDate: " + date + "\t" + (delivered ? "Delivered" : "Not Delivered");
     }
 }

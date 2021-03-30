@@ -47,7 +47,7 @@ public class App {
                         }
                         if(account instanceof Courier){
                             CourierService courierService = new CourierService((Courier)account);
-                            //courierService.session();
+                            courierService.session();
                             break;
                         }
 

@@ -2,17 +2,16 @@ package Account;
 
 public abstract class Worker extends Person{
 
-    protected String jobName;
     protected int salary;
 
-    public Worker(String email, String phoneNumber, String password, String firstName, String lastName, String jobName, int salary) {
-        super(email, phoneNumber, password, firstName, lastName);
-        this.jobName = jobName;
+    public Worker(Account account, String firstName, String lastName, int salary) {
+        super(account, firstName, lastName);
         this.salary = salary;
     }
 
-    String getJobName() {
-        return this.jobName;
+    public Worker(String email, String phoneNumber, String password, String firstName, String lastName, int salary) {
+        super(email, phoneNumber, password, firstName, lastName);
+        this.salary = salary;
     }
 
     int getSalary() {

@@ -7,22 +7,27 @@ import java.util.List;
 
 public class Customer extends Person {
 
+    String defaultAddress;
+
     private static final int nrCustomers = 0;
 
     private List<Order> orders;
 
-    public Customer(Account account, String firstName, String lastName) {
+    public Customer(Account account, String firstName, String lastName, String defaultAddress) {
         super(account, firstName, lastName);
+        this.defaultAddress = defaultAddress;
         this.orders = new ArrayList<Order>();
     }
 
-    public Customer(String firstName, String lastName, String email, String phoneNumber, String password) {
+    public Customer(String firstName, String lastName, String email, String phoneNumber, String password, String defaultAddress) {
         super(email, phoneNumber, password, firstName, lastName);
+        this.defaultAddress = defaultAddress;
         this.orders = new ArrayList<Order>();
     }
 
     public Customer(String email, String phoneNumber, String password) {
         super(email, phoneNumber, password, "user", "user");
+        this.defaultAddress = "defaultAdress";
         this.orders = new ArrayList<Order>();
     }
 

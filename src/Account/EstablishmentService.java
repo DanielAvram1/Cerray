@@ -19,7 +19,7 @@ public class EstablishmentService {
         this.establishment = establishment;
     }
 
-    public static Order chooseEstablishment() throws Exception{
+    public static Order chooseEstablishment(Customer customer) throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
         List<Establishment> establishmentList = DB.getInstance().getEstablishmentList();
@@ -51,7 +51,7 @@ public class EstablishmentService {
                 Establishment establishment = establishmentList.get(idx - 1);
 
                 System.out.println(establishment.getName());
-                return makeOrder(establishment);
+                return makeOrder(establishment, customer);
             }
         }
         return null;
@@ -65,7 +65,7 @@ public class EstablishmentService {
         }
     }
 
-    private static Order makeOrder(Establishment establishment) throws Exception{
+    private static Order makeOrder(Establishment establishment, Customer customer) throws Exception{
         displayMenu(establishment);
 
         List<MenuItem> menu = establishment.menu;
@@ -107,6 +107,17 @@ public class EstablishmentService {
                 System.out.println( "Ati introdus numerele gresit; pentru a termina, scrieti done");
             }
         }
+
+        String address = customer.defaultAddress;
+
+        System.out.println("Doriti sa primiti comanda la " + address + " ? Y/N");
+        input = in.readLine();
+
+        if(input.equals("N")){
+            System.out.print("Adresa livrarii: ");
+            address = in.readLine();
+        }
+
         System.out.println("Costul comenzii: " + cost);
         System.out.println("Doriti sa confirmati comanda? Y/N");
         input = in.readLine();
@@ -114,7 +125,10 @@ public class EstablishmentService {
             return null;
         establishment.menu = newMenu;
         establishment.income += cost;
-        return new Order(new Date(), orderItems);
+        Order order = new Order(new Date(), address, customer, orderItems);
+        DB.getInstance().orderList.add(order);
+
+        return order;
 
     }
 

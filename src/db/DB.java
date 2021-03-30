@@ -5,10 +5,12 @@ import Account.Establishment;
 import Account.Courier;
 import Account.Customer;
 import MenuItem.MenuItem;
+import Order.Order;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DB {
@@ -16,7 +18,14 @@ public class DB {
     private static DB single_instance = null;
 
     public List<Account> accountList;
+    public List<Order> orderList;
+
+    public int minCourierSalary;
     private DB() {
+
+        this.minCourierSalary = 4000;
+
+        orderList = new ArrayList<>();
 
         accountList = new ArrayList<>();
 
@@ -60,7 +69,7 @@ public class DB {
         accountList.add(laPlacinte);
         accountList.add(tucano);
 
-        Customer daniel = new Customer("avramdaniel@gmail.com", "068457184", "parola");
+        Customer daniel = new Customer("daniel@gmail.com", "068457184", "parola");
         Customer nicu = new Customer("nicu@gmail.com", "068457184", "parolaNicu");
         Customer costea = new Customer("costea@gmail.com", "068457184", "parolaCostea");
 
@@ -75,6 +84,10 @@ public class DB {
         accountList.add(paul);
         accountList.add(dragos);
         accountList.add(laura);
+
+        Order order = new Order(new Date(), "random", daniel, new ArrayList<MenuItem>());
+
+        orderList.add(order);
 
     }
 

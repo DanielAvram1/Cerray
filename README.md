@@ -29,6 +29,4 @@ Cerray este o aplicatie la nivel de consola care va permite proprietarilor de lo
 - [x] De adaugat restul functionalitatii la EstablishmentService
 - [ ] De afisat quantity nu in forma hexazecimala
 # NELAMURIRI
-- [ ] Ce ar trebui sa faca o clasa Service
-- [ ] Cum de accesat campurile private a claselor componente (menuItemList in Order in OrderService, cum sa adaugi un nou menuItem prin OrderService )
-- [ ] Cum de facut functiile findCustomerInList si isEmailLoggedIn ca functii statica a clasei Account, convertand List<Customer> la List<Account>
+wow so empty 

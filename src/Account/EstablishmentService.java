@@ -15,10 +15,14 @@ public class EstablishmentService {
 
     private Establishment establishment;
 
-    public Order chooseEstablishment() throws Exception{
+    public EstablishmentService(Establishment establishment) {
+        this.establishment = establishment;
+    }
+
+    public static Order chooseEstablishment() throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        List<Establishment> establishmentList = DB.getInstance().establishmentList;
+        List<Establishment> establishmentList = DB.getInstance().getEstablishmentList();
 
         System.out.println("Alegeti indexul localului din care doriti sa faceti comanda, sau comanda back:");
 
@@ -44,25 +48,25 @@ public class EstablishmentService {
                     continue;
                 }
 
-                establishment = establishmentList.get(idx - 1);
+                Establishment establishment = establishmentList.get(idx - 1);
 
                 System.out.println(establishment.getName());
-                return makeOrder();
+                return makeOrder(establishment);
             }
         }
         return null;
 
     }
 
-    public void displayMenu() {
+    private static void displayMenu(Establishment establishment) {
         List<MenuItem> menu = establishment.menu;
         for(int i = 0; i < menu.size(); i++) {
             System.out.println(String.format("%x:\t%s\t%f\t%x", i + 1, menu.get(i).getName(), menu.get(i).getPrice(), menu.get(i).getQuantity()));
         }
     }
 
-    public Order makeOrder() throws Exception{
-        displayMenu();
+    private static Order makeOrder(Establishment establishment) throws Exception{
+        displayMenu(establishment);
 
         List<MenuItem> menu = establishment.menu;
         List<MenuItem> newMenu = new ArrayList<MenuItem>(menu);
@@ -114,89 +118,15 @@ public class EstablishmentService {
 
     }
 
-    private Establishment findEstablishmentInList(List<Establishment> establishmentList, String email, String password) {
 
-        for(Establishment establishment : establishmentList) {
 
-            if(establishment.email.equals(email) && establishment.password.equals(password))
-                return establishment;
-        }
-        return null;
-    }
-
-    public void login() throws Exception {
-
+    public static Establishment register(Account account) throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        List<Establishment> loginEstablishmentList = DB.getInstance().establishmentList;
+        List<Establishment> loginEstablishmentList = DB.getInstance().getEstablishmentList();
 
-        boolean contLoginSession = true;
-        while(contLoginSession) {
-            System.out.print("Email: ");
-            String email = in.readLine();
+        while(true) {
 
-            System.out.print("Parola: ");
-            String password = in.readLine();
-            Establishment findEstablishment = findEstablishmentInList(loginEstablishmentList, email, password);
-
-            if(findEstablishment != null) {
-                this.establishment = findEstablishment;
-                System.out.println("Establishment Logat!");
-                contLoginSession = false;
-            }
-            else {
-                System.out.println("Ati introdus emailul sau parola gresit. Doriti sa mai incercati? Y/N");
-                String input = in.readLine();
-                if (input.equals("N")) {
-                    contLoginSession = false;
-                }
-            }
-        }
-
-    }
-
-    private boolean isEmailLoggedIn(List<Establishment> establishmentList, String email) {
-
-        for(Establishment establishment : establishmentList) {
-            if(establishment.email.equals(email))
-                return true;
-        }
-        return false;
-    }
-
-    public void register() throws Exception{
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-        List<Establishment> loginEstablishmentList = DB.getInstance().establishmentList;
-
-        boolean contSession = true;
-        while(contSession) {
-
-            boolean contEmailIntroduction = true;
-            String email = "";
-            while(contEmailIntroduction) {
-                System.out.print("Email: ");
-                email = in.readLine();
-
-                if(isEmailLoggedIn(loginEstablishmentList, email)){
-                    System.out.println("Acest email e deja logat! Doriti sa continuati sesiunea de inregistrare? Y/N");
-                    String input = in.readLine();
-                    if(input.equals("N")) {
-                        contSession = false;
-                        break;
-                    }
-                }
-                else
-                    contEmailIntroduction = false;
-            }
-
-            if(!contSession) break;
-
-
-            System.out.print("Numarul de telefon: ");
-            String phoneNumber = in.readLine();
-            System.out.print("Parola: ");
-            String password = in.readLine();
 
             System.out.print("Denumire: ");
             String name = in.readLine();
@@ -215,12 +145,13 @@ public class EstablishmentService {
             String input = in.readLine();
             if(input.equals("N")) break;
 
-            Establishment establishment = new Establishment(email, phoneNumber, password, name, address, type, description, new ArrayList<MenuItem>());
+            Establishment establishment = new Establishment(account, name, address, type, description, new ArrayList<MenuItem>());
             loginEstablishmentList.add(establishment);
 
-            this.establishment = establishment;
             System.out.println("Bun venit in Cerray! Sunteti un Establishment inregistrat!");
+            return establishment;
         }
+        return null;
     }
 
     public void addMenuItem() throws Exception{
@@ -267,7 +198,7 @@ public class EstablishmentService {
     public void deleteMenuItem() throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        displayMenu();
+        displayMenu(establishment);
         List<MenuItem> menu = establishment.menu;
 
         int idx = 0;
@@ -296,7 +227,7 @@ public class EstablishmentService {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Alegeti indexul produsului pe care doriti sa il modificati:");
-        displayMenu();
+        displayMenu(establishment);
 
         List<MenuItem> menu = establishment.menu;
 
@@ -323,35 +254,8 @@ public class EstablishmentService {
     public void session() throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Bun venit, Establishment! Introduceti comanda dorita:");
-
+        System.out.println("Bun venit, Establishment! Ce doriti sa faceti mai departe?:");
         boolean contSession = true;
-        while(contSession) {
-            System.out.println("login\tregister\tback");
-            String input = in.readLine();
-            switch (input) {
-                case "login" : {
-                    login();
-                    contSession = false;
-                    break;
-                }
-                case "register" : {
-                    register();
-                    contSession = false;
-                    break;
-                }
-                case "back" :{
-                    return;
-                }
-
-                default: {
-                    System.out.println("Ati introdus comanda gresit!");
-                }
-            }
-        }
-
-        System.out.println("Ati intrat! Ce doriti sa faceti mai departe?:");
-        contSession = true;
 
         while(contSession) {
             System.out.println("display_menu\tadd_item\tdelete_item\tedit_menu\tincome\tback");
@@ -359,7 +263,7 @@ public class EstablishmentService {
             switch (input) {
                 case "display_menu" : {
 
-                    displayMenu();
+                    displayMenu(establishment);
 
                     break;
                 }

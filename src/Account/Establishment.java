@@ -13,6 +13,16 @@ public class Establishment extends Account{
     List<MenuItem> menu;
     double income;
 
+    public Establishment(Account account, String name, String address, String type, String description , List<MenuItem> menu) {
+        super(account);
+        this.name = name;
+        this.address = address;
+        this.type = type;
+        this.description = description;
+        this.menu = new ArrayList<MenuItem>(menu);
+        income = 0;
+    }
+
     public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, List<MenuItem> menu) {
         super(email, phoneNumber, password);
         this.name = name;

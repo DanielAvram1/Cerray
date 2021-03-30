@@ -11,6 +11,11 @@ public class Customer extends Person {
 
     private List<Order> orders;
 
+    public Customer(Account account, String firstName, String lastName) {
+        super(account, firstName, lastName);
+        this.orders = new ArrayList<Order>();
+    }
+
     public Customer(String firstName, String lastName, String email, String phoneNumber, String password) {
         super(email, phoneNumber, password, firstName, lastName);
         this.orders = new ArrayList<Order>();

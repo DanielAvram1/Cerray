@@ -1,11 +1,17 @@
 package Account;
 
-public abstract class Account {
+public class Account {
     static int nrAccounts = 0;
 
     protected String email;
     protected String phoneNumber;
     protected String password;
+
+    public Account(Account account) {
+        this.email = account.email;
+        this.phoneNumber = account.phoneNumber;
+        this.password = account.password;
+    }
 
     public Account(String email, String phoneNumber, String password) {
         this.email = email;

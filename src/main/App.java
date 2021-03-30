@@ -1,12 +1,9 @@
 package main;
 
-import Account.CustomerService;
-import Account.Establishment;
-import Account.EstablishmentService;
+import Account.*;
 import MenuItem.MenuItem;
 import Order.Order;
 import Order.OrderService;
-import Account.Customer;
 import db.DB;
 
 import java.io.BufferedReader;
@@ -24,21 +21,36 @@ public class App {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             boolean contMainSession = true;
             while(contMainSession) {
-                System.out.println("customer\tcourier\testablishment\texit");
+                System.out.println("login\tregister\texit");
                 String input = in.readLine();
                 switch (input) {
-                    case "customer" : {
-                        CustomerService customerService = new CustomerService();
-                        customerService.session();
-                        break;
-                    }
-                    case "courier" : {
-                        break;
-                    }
-                    case "establishment" :{
-                        EstablishmentService establishmentService = new EstablishmentService();
-                        establishmentService.session();
-                        break;
+                    case "login" :
+                        case "register" : {
+                        Account account;
+                        if(input.equals("login"))
+                            account = AccountService.login();
+                        else
+                            account = AccountService.register();
+
+                        if(account == null)
+                            break;
+
+                        if(account instanceof Customer){
+                            CustomerService customerService = new CustomerService((Customer)account);
+                            customerService.session();
+                            break;
+                        }
+                        if(account instanceof Establishment){
+                            EstablishmentService establishmentService = new EstablishmentService((Establishment)account);
+                            establishmentService.session();
+                            break;
+                        }
+                        if(account instanceof Courier){
+                            CourierService courierService = new CourierService((Courier)account);
+                            //courierService.session();
+                            break;
+                        }
+
                     }
                     case "exit" :{
                         return;

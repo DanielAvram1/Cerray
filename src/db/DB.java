@@ -1,10 +1,13 @@
 package db;
 
+import Account.Account;
 import Account.Establishment;
 import Account.Courier;
 import Account.Customer;
 import MenuItem.MenuItem;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +15,10 @@ public class DB {
 
     private static DB single_instance = null;
 
-    public List<Establishment> establishmentList;
-    public List<Customer> customerList;
-    public List<Courier> courierList;
-
+    public List<Account> accountList;
     private DB() {
 
-        establishmentList = new ArrayList<>();
-        customerList = new ArrayList<>();
-        courierList = new ArrayList<>();
+        accountList = new ArrayList<>();
 
         List<MenuItem> menuMcDonalds = new ArrayList<MenuItem>();
 
@@ -58,29 +56,32 @@ public class DB {
 
         Establishment tucano = new Establishment("tucano@gmail.com", "030303", "parolatucano","Tucano Coffee", "Bodoni 10", "cafenea", "scump", menuTucano);
 
-        establishmentList.add(mcDonalds);
-        establishmentList.add(laPlacinte);
-        establishmentList.add(tucano);
+        accountList.add(mcDonalds);
+        accountList.add(laPlacinte);
+        accountList.add(tucano);
 
         Customer daniel = new Customer("avramdaniel@gmail.com", "068457184", "parola");
         Customer nicu = new Customer("nicu@gmail.com", "068457184", "parolaNicu");
         Customer costea = new Customer("costea@gmail.com", "068457184", "parolaCostea");
 
-        customerList.add(daniel);
-        customerList.add(nicu);
-        customerList.add(costea);
+        accountList.add(daniel);
+        accountList.add(nicu);
+        accountList.add(costea);
 
         Courier paul = new Courier("Paul", "Balan", "paul@gmail.com", "06845234", 4500, "car", "parolaPaul");
         Courier dragos = new Courier("Dragos", "Rusnac", "dragos@gmail.com", "06845234", 4500, "vape car", "parolaDragos");
         Courier laura = new Courier("Laura", "Schimbator", "laura@gmail.com", "06845234", 9000, "cute bike", "parolaLaura");
 
-        courierList.add(paul);
-        courierList.add(dragos);
-        courierList.add(laura);
+        accountList.add(paul);
+        accountList.add(dragos);
+        accountList.add(laura);
 
     }
 
     public void displayEstablishments() {
+
+        List<Establishment> establishmentList = getEstablishmentList();
+
         for(int i = 0; i < establishmentList.size(); i++) {
             System.out.println(String.format("%x:\t%s", i + 1, establishmentList.get(i).getName()));
         }
@@ -90,6 +91,36 @@ public class DB {
         if (single_instance == null)
             single_instance = new DB();
         return single_instance;
+    }
+
+    public List<Establishment> getEstablishmentList() {
+        List<Establishment> establishmentList = new ArrayList<>();
+
+        for(Account account: accountList) {
+            if(account instanceof Establishment)
+                establishmentList.add((Establishment)account);
+        }
+        return establishmentList;
+    }
+
+    public List<Courier> getCourierList() {
+        List<Courier> courierList = new ArrayList<>();
+
+        for(Account account: accountList) {
+            if(account instanceof Courier)
+                courierList.add((Courier) account);
+        }
+        return courierList;
+    }
+
+    public List<Customer> getCustomerList() {
+        List<Customer> customerList = new ArrayList<>();
+
+        for(Account account: accountList) {
+            if(account instanceof Customer)
+                customerList.add((Customer)account);
+        }
+        return customerList;
     }
 
 

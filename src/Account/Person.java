@@ -7,6 +7,12 @@ public abstract class Person extends Account{
     protected String firstName;
     protected String lastName;
 
+    public Person(Account account, String firstName, String lastName) {
+        super(account);
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public Person(String email, String phoneNumber, String password, String firstName, String lastName) {
         super(email, phoneNumber, password);
         this.firstName = firstName;

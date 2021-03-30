@@ -55,7 +55,6 @@ public class App {
                     case "exit" :{
                         return;
                     }
-
                     default: {
                         System.out.println("Ati introdus comanda gresit!");
                     }

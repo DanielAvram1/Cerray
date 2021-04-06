@@ -4,6 +4,7 @@ import Account.Account;
 import Account.Establishment;
 import Account.Courier;
 import Account.Customer;
+import Delivery.Delivery;
 import MenuItem.MenuItem;
 import Order.Order;
 
@@ -19,6 +20,7 @@ public class DB {
 
     public List<Account> accountList;
     public List<Order> orderList;
+    public List<Delivery> deliveryList;
 
     public int minCourierSalary;
     private DB() {
@@ -28,6 +30,8 @@ public class DB {
         orderList = new ArrayList<>();
 
         accountList = new ArrayList<>();
+
+        deliveryList = new ArrayList<>();
 
         List<MenuItem> menuMcDonalds = new ArrayList<MenuItem>();
 
@@ -85,7 +89,7 @@ public class DB {
         accountList.add(dragos);
         accountList.add(laura);
 
-        Order order = new Order(new Date(), "random", daniel, new ArrayList<MenuItem>());
+        Order order = new Order(new Date(), "random", daniel,tucano, new ArrayList<MenuItem>());
 
         orderList.add(order);
 

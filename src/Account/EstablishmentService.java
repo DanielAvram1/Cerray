@@ -19,7 +19,7 @@ public class EstablishmentService {
         this.establishment = establishment;
     }
 
-    public static Order chooseEstablishment(Customer customer) throws Exception{
+    private static Establishment chooseEstablishment() throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
         List<Establishment> establishmentList = DB.getInstance().getEstablishmentList();
@@ -51,7 +51,7 @@ public class EstablishmentService {
                 Establishment establishment = establishmentList.get(idx - 1);
 
                 System.out.println(establishment.getName());
-                return makeOrder(establishment, customer);
+                return establishment;
             }
         }
         return null;
@@ -65,7 +65,10 @@ public class EstablishmentService {
         }
     }
 
-    private static Order makeOrder(Establishment establishment, Customer customer) throws Exception{
+    public static Order makeOrder( Customer customer) throws Exception{
+        Establishment establishment = chooseEstablishment();
+        if(establishment == null)
+            return null;
         displayMenu(establishment);
 
         List<MenuItem> menu = establishment.menu;
@@ -125,7 +128,7 @@ public class EstablishmentService {
             return null;
         establishment.menu = newMenu;
         establishment.income += cost;
-        Order order = new Order(new Date(), address, customer, orderItems);
+        Order order = new Order(new Date(), address, customer, establishment, orderItems);
         DB.getInstance().orderList.add(order);
 
         return order;

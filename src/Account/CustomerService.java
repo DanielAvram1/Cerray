@@ -46,6 +46,16 @@ public class CustomerService {
         return null;
     }
 
+    private void displayOrders() {
+        List<Order> orderList = customer.getOrders();
+        if(orderList.size() == 0) {
+            System.out.println("There is nothing to display");
+            return;
+        }
+        for(int i = 0;i < orderList.size(); i++) {
+            System.out.println((i + 1) + ". " + orderList.get(i));
+        }
+    }
 
     public void session() throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -58,28 +68,23 @@ public class CustomerService {
             System.out.println("order\tdisplay_orders\tback");
             String input = in.readLine();
             switch (input) {
-                case "order" : {
+                case "order" -> {
 
-                    Order order = EstablishmentService.chooseEstablishment(this.customer);
+                    Order order = EstablishmentService.makeOrder(this.customer);
 
-                    if(order != null) {
+                    if (order != null) {
                         this.customer.addOrder(order);
                         System.out.println("Ati facut comanda!");
                     }
 
-                    break;
                 }
-                case "display_orders" : {
-
+                case "display_orders" -> {
+                    displayOrders();
+                }
+                case "back" -> {
                     contCustomerSession = false;
-                    break;
                 }
-                case "back" :{
-                    contCustomerSession = false;
-                    break;
-                }
-
-                default: {
+                default -> {
                     System.out.println("Ati introdus comanda gresit!");
                 }
             }

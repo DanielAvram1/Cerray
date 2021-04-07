@@ -1,35 +1,39 @@
 package Account;
 
 import MenuItem.MenuItem;
+import com.sun.source.tree.Tree;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Establishment extends Account{
     String name;
     String address;
     String type;
     String description;
-    List<MenuItem> menu;
+    SortedMap<MenuItem, Integer> menu;
     double income;
 
-    public Establishment(Account account, String name, String address, String type, String description , List<MenuItem> menu) {
+    public Establishment(Account account, String name, String address, String type, String description , SortedMap<MenuItem, Integer> menu) {
         super(account);
         this.name = name;
         this.address = address;
         this.type = type;
         this.description = description;
-        this.menu = new ArrayList<MenuItem>(menu);
+        this.menu = new TreeMap<>(menu);
         income = 0;
     }
 
-    public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, List<MenuItem> menu) {
+    public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, SortedMap<MenuItem, Integer> menu) {
         super(email, phoneNumber, password);
         this.name = name;
         this.address = address;
         this.type = type;
         this.description = description;
-        this.menu = new ArrayList<MenuItem>(menu);
+        this.menu = new TreeMap<>(menu);
         income = 0;
     }
 
@@ -67,16 +71,30 @@ public class Establishment extends Account{
     }
 
 
-    public List<MenuItem> getMenu() {
+    public SortedMap<MenuItem, Integer> getMenu() {
         return menu;
     }
 
-    public void setMenu(List<MenuItem> menu) {
+    public void setMenu(SortedMap<MenuItem, Integer> menu) {
         this.menu = menu;
     }
 
     public void addMenuItem(MenuItem menuItem) {
-        this.menu.add(menuItem);
+        if(menu.containsKey(menuItem)){
+            Integer quan = menu.get(menuItem);
+            menu.put(menuItem, quan + 1);
+        }
+        else
+            menu.put(menuItem, 0);
+    }
+
+    public void addQuantity(MenuItem menuItem, Integer quantity){
+        if(menu.containsKey(menuItem)){
+            Integer quan = menu.get(menuItem);
+            menu.put(menuItem, quan + quantity);
+        }
+        else
+            menu.put(menuItem, quantity);
     }
 
 

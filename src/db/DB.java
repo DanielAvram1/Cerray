@@ -10,9 +10,7 @@ import Order.Order;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class DB {
 
@@ -33,39 +31,39 @@ public class DB {
 
         deliveryList = new ArrayList<>();
 
-        List<MenuItem> menuMcDonalds = new ArrayList<MenuItem>();
+        SortedMap<MenuItem, Integer> menuMcDonalds = new TreeMap<>();
 
-        MenuItem cheeseburger = new MenuItem("Cheeseburger", 20,100);
-        MenuItem chickenNuggets = new MenuItem("Chicken Nuggets", 30,100);
-        MenuItem cola = new MenuItem("Cola", 15, 100);
+        MenuItem cheeseburger = new MenuItem("Cheeseburger", 20);
+        MenuItem chickenNuggets = new MenuItem("Chicken Nuggets", 30);
+        MenuItem cola = new MenuItem("Cola", 15);
 
-        menuMcDonalds.add(cheeseburger);
-        menuMcDonalds.add(chickenNuggets);
-        menuMcDonalds.add(cola);
+        menuMcDonalds.put(cheeseburger, 1000);
+        menuMcDonalds.put(chickenNuggets, 200);
+        menuMcDonalds.put(cola, 1000);
 
         Establishment mcDonalds = new Establishment("mcdonalds@gmail.com", "030303", "parolamcdonalds","McDonalds", "Padurii 10", "fast-food", "gustos", menuMcDonalds);
 
-        List<MenuItem> menuLaPlacinte = new ArrayList<MenuItem>();
+        SortedMap<MenuItem, Integer> menuLaPlacinte = new TreeMap<>();
 
-        MenuItem placintaCuBranza = new MenuItem("Placinta cu branza", 25, 100);
-        MenuItem mamaliga = new MenuItem("Mamaliga", 20, 100);
-        MenuItem vinRosu = new MenuItem("Vin Rosu", 35, 100);
+        MenuItem placintaCuBranza = new MenuItem("Placinta cu branza", 25);
+        MenuItem mamaliga = new MenuItem("Mamaliga", 20);
+        MenuItem vinRosu = new MenuItem("Vin Rosu", 35);
 
-        menuLaPlacinte.add(placintaCuBranza);
-        menuLaPlacinte.add(mamaliga);
-        menuLaPlacinte.add(vinRosu);
+        menuLaPlacinte.put(placintaCuBranza, 18823);
+        menuLaPlacinte.put(mamaliga, 200);
+        menuLaPlacinte.put(vinRosu, 1000);
 
         Establishment laPlacinte = new Establishment("laPlacinte@gmail.com", "030303", "parolalaplacinte","La Placinte", "Kiev 11", "restaurant", "foarte gustos", menuLaPlacinte);
 
-        List<MenuItem> menuTucano = new ArrayList<MenuItem>();
+        SortedMap<MenuItem, Integer> menuTucano = new TreeMap<>();
 
-        MenuItem cappuccino = new MenuItem("Cappuccino", 25, 100);
-        MenuItem cheesecake = new MenuItem("Cheesecake", 40, 100);
-        MenuItem gingerTea = new MenuItem("Ginger Tea", 30, 100);
+        MenuItem cappuccino = new MenuItem("Cappuccino", 25);
+        MenuItem cheesecake = new MenuItem("Cheesecake", 40);
+        MenuItem gingerTea = new MenuItem("Ginger Tea", 30);
 
-        menuTucano.add(cappuccino);
-        menuTucano.add(cheesecake);
-        menuTucano.add(gingerTea);
+        menuTucano.put(cappuccino, 100);
+        menuTucano.put(cheesecake, 100);
+        menuTucano.put(gingerTea, 100);
 
         Establishment tucano = new Establishment("tucano@gmail.com", "030303", "parolatucano","Tucano Coffee", "Bodoni 10", "cafenea", "scump", menuTucano);
 
@@ -89,7 +87,7 @@ public class DB {
         accountList.add(dragos);
         accountList.add(laura);
 
-        Order order = new Order(new Date(), "random", daniel,tucano, new ArrayList<MenuItem>());
+        Order order = new Order(new Date(), "random", daniel,tucano, new TreeMap<>());
 
         orderList.add(order);
 

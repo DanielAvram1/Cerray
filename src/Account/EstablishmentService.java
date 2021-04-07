@@ -5,10 +5,11 @@ import MenuItem.MenuItemService;
 import Order.Order;
 import db.DB;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
+import java.lang.management.MemoryNotificationInfo;
+import java.util.*;
 import java.util.List;
 
 public class EstablishmentService {
@@ -17,6 +18,17 @@ public class EstablishmentService {
 
     public EstablishmentService(Establishment establishment) {
         this.establishment = establishment;
+    }
+
+    private static MenuItem getMenuItemByName(Establishment establishment, String name) {
+        MenuItem chosenMenuItem = null;
+        for(MenuItem menuItem: establishment.menu.keySet()){
+            if(menuItem.getName().equals(name)){
+                chosenMenuItem = menuItem;
+                break;
+            }
+        }
+        return chosenMenuItem;
     }
 
     private static Establishment chooseEstablishment() throws Exception{
@@ -59,9 +71,9 @@ public class EstablishmentService {
     }
 
     private static void displayMenu(Establishment establishment) {
-        List<MenuItem> menu = establishment.menu;
-        for(int i = 0; i < menu.size(); i++) {
-            System.out.println(String.format("%x:\t%s\t%f\t%x", i + 1, menu.get(i).getName(), menu.get(i).getPrice(), menu.get(i).getQuantity()));
+        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        for(MenuItem menuItem: menu.keySet()) {
+            System.out.printf("%s\t%f\t%x%n", menuItem.getName(), menuItem.getPrice(), menu.get(menuItem));
         }
     }
 
@@ -71,40 +83,38 @@ public class EstablishmentService {
             return null;
         displayMenu(establishment);
 
-        List<MenuItem> menu = establishment.menu;
-        List<MenuItem> newMenu = new ArrayList<MenuItem>(menu);
+        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        SortedMap<MenuItem, Integer> newMenu = new TreeMap<>(menu);
 
-        List<MenuItem> orderItems = new ArrayList<>();
+        SortedMap<MenuItem, Integer> orderItems = new TreeMap<>();
         double cost = 0;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String input = "";
-        boolean cont = true;
-        while(cont) {
+        while(true) {
             input = in.readLine();
             if(input.equals("done")) {
-                cont = false;
                 break;
             }
             String[] args = input.split(" ");
             try {
-                int idx, quan;
+                String name = args[0];
+                int  quan;
+                MenuItem chosenMenuItem = getMenuItemByName(establishment, name);
 
-                idx = Integer.parseInt(args[0]);
-                if(idx < 1 || idx > menu.size()) throw new Exception("prea mic sau mare indexul!");
+                if(chosenMenuItem == null) throw new Exception("Nu ati introdus un nume de produs corect!");
 
                 quan = 1;
 
                 if(args.length == 2) {
                     quan = Integer.parseInt(args[1]);
-                    if(quan < 1 || quan > newMenu.get(idx - 1).getQuantity()) throw new Exception("prea mica sau mare cantitatea!");
+                    if(quan < 1 || quan > newMenu.get(chosenMenuItem)) throw new Exception("prea mica sau mare cantitatea!");
                 }
 
-                cost += menu.get(idx - 1).getPrice() * quan;
+                cost += chosenMenuItem.getPrice() * quan;
 
-                MenuItem orderItem = new MenuItem(menu.get(idx - 1).getName(), menu.get(idx - 1).getPrice(), quan);
-                orderItems.add(orderItem);
+                orderItems.put(chosenMenuItem, quan);
 
-                newMenu.get(idx - 1).addQuantity(-quan);
+                establishment.addQuantity(chosenMenuItem, -quan);
 
             } catch(Exception e) {
                 System.out.println( "Ati introdus numerele gresit; pentru a termina, scrieti done");
@@ -162,7 +172,7 @@ public class EstablishmentService {
             String input = in.readLine();
             if(input.equals("N")) break;
 
-            Establishment establishment = new Establishment(account, name, address, type, description, new ArrayList<MenuItem>());
+            Establishment establishment = new Establishment(account, name, address, type, description, new TreeMap<>());
             loginEstablishmentList.add(establishment);
 
             System.out.println("Bun venit in Cerray! Sunteti un Establishment inregistrat!");
@@ -198,6 +208,8 @@ public class EstablishmentService {
             String input = in.readLine();
             try {
                 quan = Integer.parseInt(input);
+                if(quan < 0)
+                    throw new Exception();
                 break;
 
             } catch (Exception e) {
@@ -205,9 +217,10 @@ public class EstablishmentService {
             }
         }
 
-        MenuItem menuItem = new MenuItem(name, price, quan);
+        MenuItem menuItem = new MenuItem(name, price);
 
-        this.establishment.addMenuItem(menuItem);
+        establishment.addMenuItem(menuItem);
+        establishment.addQuantity(menuItem, quan);
         System.out.println("Produsul " + name + " a fost introdus in meniul localului!");
 
     }
@@ -216,55 +229,113 @@ public class EstablishmentService {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
         displayMenu(establishment);
-        List<MenuItem> menu = establishment.menu;
+        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        System.out.println("Alegeti numele produsului pe care doriti sa il stergeti:");
 
-        int idx = 0;
+        String name;
+        MenuItem chosenMenuItem = null;
 
         while(true) {
             try{
-                String input = in.readLine();
-                idx = Integer.parseInt(input);
-                if(idx < 1 || idx > menu.size()) {
-                    System.out.println("Indexul e prea mic sau prea mare!");
-                    continue;
-                }
+                name = in.readLine();
+                chosenMenuItem = getMenuItemByName(establishment, name);
+                if(chosenMenuItem == null)
+                    throw new Exception();
                 break;
             } catch (Exception e) {
-                System.out.println("Ati introdus indexul gresit!");
+                System.out.println("Ati introdus numele gresit!");
             }
         }
 
-        menu.remove(idx - 1);
+        menu.remove(chosenMenuItem);
+        System.out.printf("Produsul %s a fost sters din meniu!%n", name);
 
 
+    }
+
+    private void editMenuItem(MenuItem menuItem) throws Exception{
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Introduceti campul pe care doriti sa-l modificati:");
+
+        boolean cont = true;
+        while(cont) {
+            System.out.println("name\tprice\tquantity\tcancel");
+            String input = in.readLine();
+            switch (input) {
+                case "name" -> {
+                    System.out.print("New name: ");
+                    String name = in.readLine();
+                    menuItem.setName(name);
+                    cont = false;
+                }
+                case "price" -> {
+                    System.out.print("New Price: ");
+                    try {
+                        String priceInput = in.readLine();
+                        double price = Double.parseDouble(priceInput);
+                        if (price < 0) {
+                            System.out.println("Pretul nu poate fi negativ!");
+                            break;
+                        }
+                        menuItem.setPrice(price);
+                        cont = false;
+
+                    } catch (Exception e) {
+                        System.out.println("Ati introdus un pret gresit!");
+                    }
+                }
+                case "quantity" -> {
+                    System.out.print("New Quantity: ");
+                    try {
+                        String quanInput = in.readLine();
+                        int quan = Integer.parseInt(quanInput);
+                        if (quan < 0) {
+                            System.out.println("Cantitatea nu poate fi negativa!");
+                            break;
+                        }
+                        establishment.menu.put(menuItem, quan);
+                        cont = false;
+
+                    } catch (Exception e) {
+                        System.out.println("Ati introdus o cantitate gresita!");
+                    }
+                }
+                case "cancel" -> {
+                    return;
+                }
+                default -> {
+                    System.out.println("Ati introdus un camp gresit. Pentru a iesi, tastati cancel");
+                }
+            }
+        }
     }
 
     public void editMenu() throws Exception{
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Alegeti indexul produsului pe care doriti sa il modificati:");
+        System.out.println("Alegeti numele produsului pe care doriti sa il modificati:");
         displayMenu(establishment);
 
-        List<MenuItem> menu = establishment.menu;
-
-        int idx = 0;
-
+        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        String name;
+        MenuItem chosenMenuItem = null;
         while(true) {
             try{
-                String input = in.readLine();
-                idx = Integer.parseInt(input);
-                if(idx < 1 || idx > menu.size()) {
-                    System.out.println("Indexul e prea mic sau prea mare!");
-                    continue;
-                }
+                name = in.readLine();
+
+                chosenMenuItem = getMenuItemByName(establishment, name);
+
+                if(chosenMenuItem == null)
+                    throw new Exception("Nu ati introdus un nume existent!");
+
                 break;
             } catch (Exception e) {
-                System.out.println("Ati introdus indexul gresit!");
+                System.out.println(e.getMessage());
             }
         }
-        MenuItemService.editMenuItem(menu.get(idx - 1));
-
+        editMenuItem(chosenMenuItem);
     }
 
 

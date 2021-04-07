@@ -6,16 +6,17 @@ import MenuItem.MenuItem;
 
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 public class Order {
     Date date;
     String address;
-    List<MenuItem> menuItemList;
+    SortedMap<MenuItem, Integer> menuItemList;
     Establishment establishment;
     Customer receiver;
     boolean delivered;
 
-    public Order(Date date, String address, Customer customer, Establishment establishment, List<MenuItem> menuItemList) {
+    public Order(Date date, String address, Customer customer, Establishment establishment, SortedMap<MenuItem, Integer> menuItemList) {
         this.date = date;
         this.menuItemList = menuItemList;
         this.address = address;

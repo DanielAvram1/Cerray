@@ -1,21 +1,23 @@
 package MenuItem;
 
-public class MenuItem {
+public class MenuItem implements Comparable{
     String name;
     double price;
-    int quantity;
 
 
-    public MenuItem(String name, double price, int quantity) {
+    public MenuItem(String name, double price) {
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+    }
+
+    public MenuItem(String name) {
+        this.name = name;
+        this.price = 0;
     }
 
     public MenuItem(MenuItem menuItem) {
         name = menuItem.getName();
         price = menuItem.getPrice();
-        quantity = menuItem.getQuantity();
     }
 
     public String getName() {
@@ -34,23 +36,17 @@ public class MenuItem {
         this.price = price;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public void addQuantity(int quantity) {
-        this.quantity += quantity;
-    }
-
     @Override
     public String toString() {
         return "MenuItem{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        MenuItem menuItem = (MenuItem)o;
+        return this.name.compareTo(menuItem.name);
     }
 }

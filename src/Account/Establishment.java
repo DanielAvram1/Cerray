@@ -1,9 +1,10 @@
 package Account;
 
 import MenuItem.MenuItem;
-import com.sun.source.tree.Tree;
+import db.DBCSVService;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -25,16 +26,18 @@ public class Establishment extends Account{
         this.description = description;
         this.menu = new TreeMap<>(menu);
         income = 0;
+        DBCSVService.getInstance().insert(this);
     }
 
-    public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, SortedMap<MenuItem, Integer> menu) {
-        super(email, phoneNumber, password);
+    public Establishment(String id, String email, String phoneNumber, String password, String name, String address, String type, String description, SortedMap<MenuItem, Integer> menu, double income) {
+        super(id, email, phoneNumber, password);
         this.name = name;
         this.address = address;
         this.type = type;
         this.description = description;
         this.menu = new TreeMap<>(menu);
-        income = 0;
+        this.income = income;
+       // DBCSVService.getInstance().insert(this);
     }
 
 
@@ -72,7 +75,7 @@ public class Establishment extends Account{
 
 
     public SortedMap<MenuItem, Integer> getMenu() {
-        return menu;
+        return new TreeMap<>(menu);
     }
 
     public void setMenu(SortedMap<MenuItem, Integer> menu) {
@@ -83,18 +86,32 @@ public class Establishment extends Account{
         if(menu.containsKey(menuItem)){
             Integer quan = menu.get(menuItem);
             menu.put(menuItem, quan + 1);
+            try {
+                DBCSVService.getInstance().deleteById("data/establishment_menuItem.csv", id, 0);
+            } catch(IOException e) {
+                System.out.println(e.getMessage());
+            }
+            
         }
         else
             menu.put(menuItem, 0);
+        DBCSVService.getInstance().insertAsoc(this, menuItem);
     }
 
     public void addQuantity(MenuItem menuItem, Integer quantity){
         if(menu.containsKey(menuItem)){
             Integer quan = menu.get(menuItem);
             menu.put(menuItem, quan + quantity);
+            try {
+                DBCSVService.getInstance().deleteById("data/establishment_menuItem.csv", id, 0);
+            } catch(IOException e) {
+                System.out.println(e.getMessage());
+            }
+
         }
         else
             menu.put(menuItem, quantity);
+        DBCSVService.getInstance().insertAsoc(this, menuItem);
     }
 
 
@@ -106,5 +123,31 @@ public class Establishment extends Account{
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public String toCSV() {
+        return  super.toCSV() + ',' +
+                this.name + ',' +
+                this.address + ',' +
+                this.type + ',' +
+                this.description + ',' +
+                this.income;
+    }
+
+    public static Establishment readFromCSV(String csv) {
+        String[] data = csv.split(",");
+        String id = data[0];
+        String email = data[1];
+        String phoneNumber = data[2];
+        String password = data[3];
+        String name = data[4];
+        String address = data[5];
+        String type = data[6];
+        String description = data[7];
+        double income = Double.parseDouble(data[8]);
+
+        SortedMap<MenuItem, Integer>menu = DBCSVService.getInstance(1).readMenuFromCSV(id, "establishment_menuItem");
+
+        return new Establishment(id, email, phoneNumber, password, name, address, type, description, menu, income);
     }
 }

@@ -5,6 +5,7 @@ import Delivery.DeliveryService;
 import Order.Order;
 import Order.OrderService;
 import db.DB;
+import db.DBCSVService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -128,6 +129,10 @@ public class CourierService {
               Delivery delivery = undeliveredDeliveryList.get(idx - 1);
               delivery.setDeliveryDate(new Date());
               delivery.getOrder().setDelivered(true);
+
+              DBCSVService.getInstance().delete(delivery);
+              DBCSVService.getInstance().insert(delivery);
+
               System.out.println("Ati confirmat livrarea " + idx + "!");
 
               return;
@@ -152,7 +157,7 @@ public class CourierService {
                     OrderService.displayNotDeliveredOrders();
                 }
                 case "make_delivery" -> {
-                    Delivery delivery = DeliveryService.makeDelivery(courier);
+                    Delivery delivery = DeliveryService.makeDelivery();
                     courier.deliveryList.add(delivery);
                 }
                 case "display_my_deliveries" -> {

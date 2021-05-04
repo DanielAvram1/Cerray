@@ -1,6 +1,7 @@
 package Account;
 
 import Order.Order;
+import db.DBCSVService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,27 +18,29 @@ public class Customer extends Person {
         super(account, firstName, lastName);
         this.defaultAddress = defaultAddress;
         this.orderList = new ArrayList<Order>();
+        DBCSVService.getInstance().insert(this);
     }
 
-    public Customer(String firstName, String lastName, String email, String phoneNumber, String password, String defaultAddress) {
-        super(email, phoneNumber, password, firstName, lastName);
+    public Customer(String id, String firstName, String lastName, String email, String phoneNumber, String password, String defaultAddress, List<Order> orderList) {
+        super(id, email, phoneNumber, password, firstName, lastName);
         this.defaultAddress = defaultAddress;
-        this.orderList = new ArrayList<Order>();
+        this.orderList = orderList;
     }
 
-    public Customer(String email, String phoneNumber, String password) {
-        super(email, phoneNumber, password, "user", "user");
+    public Customer(String id, String email, String phoneNumber, String password) {
+        super(id, email, phoneNumber, password, "user", "user");
         this.defaultAddress = "defaultAdress";
         this.orderList = new ArrayList<Order>();
     }
 
     public List<Order> getOrders() {
-        List<Order> orders = new ArrayList<Order>(this.orderList);
-        return orders;
+        return new ArrayList<Order>(this.orderList);
     }
 
     public void addOrder(Order order) {
+
         this.orderList.add(order);
+        DBCSVService.getInstance().insertAsoc(this, order);
     }
 
     @Override
@@ -48,5 +51,26 @@ public class Customer extends Person {
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
+    }
+
+    public String toCSV() {
+
+        return  super.toCSV() + ',' +
+                this.defaultAddress;
+    }
+
+    public static Customer readFromCSV(String csv) {
+        String[] data = csv.split(",");
+        String id = data[0];
+        String email = data[1];
+        String phoneNumber = data[2];
+        String password = data[3];
+        String firstName = data[4];
+        String lastName = data[5];
+        String defaultAddress = data[6];
+
+        List<Order> orderList = DBCSVService.getInstance(2).readOrdersFromCSV(id);
+
+        return new Customer(id, firstName, lastName, email, phoneNumber, password, defaultAddress, orderList);
     }
 }

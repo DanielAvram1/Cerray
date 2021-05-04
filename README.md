@@ -97,6 +97,10 @@ Aceasta abominatie m-a impus sa schimb un pic singletonul DBCSVService astfel in
 
 Se putea de creat clasa intr-un mod mai comprehensiv? DA. Am acum timp pentru asta? Nope, profii au decis sa ne bacseasca cu teme acum, in ajun de sesiune...
 
+## Logger
+
+A fost adaugat logger.csv care contine informatii despre unele actiuni facute de utilizator si timestamp-ul cand fiecare actiune a avut loc.
+
 ## TO DO
 - [ ] De cautat posibile bugguri.
 - [ ] De facut un refactoring turbat, in special de schimbat denumirile unor functii in unele mai comprehensive si de introdus clase Template. Multe functii sunt identice, se deosebeste doar clasele la care se face casting.

@@ -44,12 +44,12 @@ public class DB {
         this.minCourierSalary = 4000;
 
         menuItemList = DBCSVService.getInstance(1).menuItemList;
-       // System.out.println("menu item list loaded");
-        orderList = DBCSVService.getInstance(2).orderList;
+      //  System.out.println("menu item list loaded");
+        orderList = DBCSVService.getInstance(3).orderList;
        // System.out.println("order list loaded");
-        deliveryList = DBCSVService.getInstance(3).deliveryList;
+        deliveryList = DBCSVService.getInstance(4).deliveryList;
        // System.out.println("delivery list loaded");
-        accountList = DBCSVService.getInstance(4).accountList;
+        accountList = DBCSVService.getInstance(5).accountList;
        // System.out.println("account list loaded");
 //        SortedMap<MenuItem, Integer> menuMcDonalds = new TreeMap<>();
 //

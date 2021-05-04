@@ -4,6 +4,7 @@ import MenuItem.MenuItem;
 import MenuItem.MenuItemService;
 import Order.Order;
 import db.DB;
+import db.DBCSVService;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -73,7 +74,7 @@ public class EstablishmentService {
     private static void displayMenu(Establishment establishment) {
         SortedMap<MenuItem, Integer> menu = establishment.menu;
         for(MenuItem menuItem: menu.keySet()) {
-            System.out.printf("%s\t%f\t%x%n", menuItem.getName(), menuItem.getPrice(), menu.get(menuItem));
+            System.out.printf("\n%s\t%f\t%x%n", menuItem.getName(), menuItem.getPrice(), menu.get(menuItem));
         }
     }
 
@@ -138,7 +139,11 @@ public class EstablishmentService {
             return null;
         establishment.menu = newMenu;
         establishment.income += cost;
-        Order order = new Order(new Date(), address, customer, establishment, orderItems);
+
+        DBCSVService.getInstance().delete(establishment);
+        DBCSVService.getInstance().insert(establishment);
+
+        Order order = new Order(new Date(), address, establishment, orderItems);
         DB.getInstance().orderList.add(order);
 
         return order;
@@ -176,6 +181,7 @@ public class EstablishmentService {
             loginEstablishmentList.add(establishment);
 
             System.out.println("Bun venit in Cerray! Sunteti un Establishment inregistrat!");
+            DBCSVService.getInstance().addLog(establishment.getId() + " registered as an Establishment");
             return establishment;
         }
         return null;
@@ -248,6 +254,7 @@ public class EstablishmentService {
         }
 
         menu.remove(chosenMenuItem);
+        DBCSVService.getInstance().deleteById("data/establishment_menuItem.csv", establishment.getId(), 0);
         System.out.printf("Produsul %s a fost sters din meniu!%n", name);
 
 
@@ -309,6 +316,8 @@ public class EstablishmentService {
                 }
             }
         }
+        DBCSVService.getInstance().delete(menuItem);
+        DBCSVService.getInstance().insert(menuItem);
     }
 
     public void editMenu() throws Exception{

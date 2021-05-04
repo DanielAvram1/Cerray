@@ -2,6 +2,7 @@ package Account;
 
 import Order.Order;
 import db.DB;
+import db.DBCSVService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class CustomerService {
             accountList.add(customer);
 
             System.out.println("Bun venit in Cerray! Sunteti un Customer inregistrat!");
+            DBCSVService.getInstance().addLog(customer.getId() + " registered as a Customer");
             return customer;
         }
         return null;

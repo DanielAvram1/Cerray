@@ -20,25 +20,22 @@ public class Order {
 
     SortedMap<MenuItem, Integer> menuItemList;
     Establishment establishment;
-    Customer receiver;
     boolean delivered;
 
-    public Order(Date date, String address, Customer customer, Establishment establishment, SortedMap<MenuItem, Integer> menuItemList) {
+    public Order(Date date, String address, Establishment establishment, SortedMap<MenuItem, Integer> menuItemList) {
         this.id = UUID.randomUUID().toString();
         this.date = date;
         this.menuItemList = menuItemList;
         this.address = address;
-        this.receiver = customer;
         this.establishment = establishment;
         this.delivered = false;
         DBCSVService.getInstance().insert(this);
     }
-    public Order(String id, Date date, String address, Establishment establishment, Customer receiver, SortedMap<MenuItem, Integer> menuItemList, Boolean delivered) {
+    public Order(String id, Date date, String address, Establishment establishment, SortedMap<MenuItem, Integer> menuItemList, Boolean delivered) {
         this.id = id;
         this.date = date;
         this.address = address;
         this.establishment = establishment;
-        this.receiver = receiver;
         this.menuItemList = menuItemList;
         this.delivered = delivered;
     }
@@ -55,9 +52,6 @@ public class Order {
         return establishment;
     }
 
-    public Customer getReceiver() {
-        return receiver;
-    }
 
     public String getAddress() {
         return address;
@@ -87,7 +81,6 @@ public class Order {
                 date.toString() + ',' +
                 address + ',' +
                 establishment.getId() + ',' +
-                receiver.getId() + ',' +
                 delivered;
     }
 
@@ -96,15 +89,20 @@ public class Order {
             String[] data = csv.split(",");
             String id = data[0];
 
-            Date date = (new SimpleDateFormat()).parse(data[1]);
+            Date date = (new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy")).parse(data[1]);
+            System.out.println(date);
             String address = data[2];
-            Establishment establishment = (Establishment)(DB.getInstance().getAccountById(data[3]));
-            Customer customer = (Customer)(DB.getInstance().getAccountById(data[4]));
-            Boolean delivered = Boolean.parseBoolean(data[5]);
+            Establishment establishment = (Establishment)DBCSVService.getInstance(2).getEstablishmentList().stream()
+                    .reduce(null, (pred, curr) -> {
+                        if(curr.getId().equals(data[3]))
+                            pred = curr;
+                        return pred;
+                    });
+            Boolean delivered = Boolean.parseBoolean(data[4]);
 
-            SortedMap<MenuItem, Integer> menuItemList = DBCSVService.getInstance(1).readMenuFromCSV(id, "data/order_menuItem");
+            SortedMap<MenuItem, Integer> menuItemList = DBCSVService.getInstance(1).readMenuFromCSV(id, "order_menuItem");
 
-            return new Order(id, date, address, establishment, customer, menuItemList, delivered);
+            return new Order(id, date, address, establishment, menuItemList, delivered);
 
         } catch(ParseException e) {
             System.out.println(e.getMessage());

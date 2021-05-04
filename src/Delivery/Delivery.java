@@ -82,9 +82,14 @@ public class Delivery {
         try {
             String[] data = csv.split(",");
             String id = data[0];
-            Order order = DB.getInstance().getOrderById(data[1]);
-            Date pickedDate = (new SimpleDateFormat()).parse(data[2]);
-            Date deliveryDate = (new SimpleDateFormat()).parse(data[3]);
+            Order order = DBCSVService.getInstance(3).getOrderList().stream()
+                    .reduce(null, (pred, curr) -> {
+                        if(curr.getId().equals(data[1]))
+                            pred = curr;
+                        return pred;
+                    });
+            Date pickedDate = (new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy")).parse(data[2]);
+            Date deliveryDate = (new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy")).parse(data[3]);
 
             return new Delivery(id, order, pickedDate, deliveryDate);
         } catch(ParseException e) {

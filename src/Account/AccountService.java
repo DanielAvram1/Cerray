@@ -1,6 +1,7 @@
 package Account;
 
 import db.DB;
+import db.DBCSVService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -97,6 +98,7 @@ public class AccountService {
 
             if(findAccount != null) {
                 System.out.println("Account Logat!");
+                DBCSVService.getInstance().addLog(findAccount.getId() + " logged in");
                 return findAccount;
             }
             else {

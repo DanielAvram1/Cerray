@@ -69,7 +69,7 @@ public class Customer extends Person {
         String lastName = data[5];
         String defaultAddress = data[6];
 
-        List<Order> orderList = DBCSVService.getInstance(2).readOrdersFromCSV(id);
+        List<Order> orderList = DBCSVService.getInstance(3).readOrdersFromCSV(id);
 
         return new Customer(id, firstName, lastName, email, phoneNumber, password, defaultAddress, orderList);
     }

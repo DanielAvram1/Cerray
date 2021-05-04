@@ -45,6 +45,7 @@ public class CourierService {
             accountList.add(courier);
 
             System.out.println("Bun venit in Cerray! Sunteti un Courier inregistrat!");
+            DBCSVService.getInstance().addLog(courier.getId() + " registered as an Courier");
             return courier;
         }
         return null;
@@ -134,7 +135,7 @@ public class CourierService {
               DBCSVService.getInstance().insert(delivery);
 
               System.out.println("Ati confirmat livrarea " + idx + "!");
-
+              DBCSVService.getInstance().addLog(courier.getId() + " confirmed delivery " + delivery.getId());
               return;
             } catch(NumberFormatException e) {
                 System.out.println("Ati introdus indexul gresit. Pentru a iesi, tapati cancel");
@@ -159,6 +160,8 @@ public class CourierService {
                 case "make_delivery" -> {
                     Delivery delivery = DeliveryService.makeDelivery();
                     courier.deliveryList.add(delivery);
+                    DBCSVService.getInstance().insertAsoc(courier, delivery);
+                    DBCSVService.getInstance().addLog(courier.getId() + " took delivery " + delivery.getId());
                 }
                 case "display_my_deliveries" -> {
                     displayMyDeliveries();

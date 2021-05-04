@@ -88,11 +88,12 @@ Clasele Customer, Courier, Establishment, Delivery, MenuItem, Order au fost modi
 
 Din moment ce unele clase depindeau de altele, incarcarea obiectelor din csv trebuia facuta pe anumite stadii. 
 1. Mai intai, DBCSVService incarca MenuItemList.
-2. Apoi incarca OrderList si EstablishmentList care contin obiecte de tip MenuItem.
-3. Se incarca DeliveryList. clasa Delivery contine obiecte de tipul Order si Establishment.
-4. Se incarca celelalte clase care depind de clasele de mai sus.
+2. Apoi incarca EstablishmentList care contin obiecte de tip MenuItem.
+3. Apoi se incarca OrderList care contin obiecte de tip MenuItem si Establishment.
+4. Se incarca DeliveryList. clasa Delivery contine obiecte de tipul Order si Establishment.
+5. Se incarca celelalte clase care depind de clasele de mai sus.
 
-Aceasta abominatie m-a impus sa schimb un pic singletonul DBCSVService astfel incat clasele sa se incarce in ordinea urmatoare in mai multe stadii, pentru ca crearea clasei la o stadie necesita informatiile din stadiile precedente. Deci, practic singletonul pastreaza 4 instante care contin o cantitate diferita de informatii si care se construiau din instantele precedente: firstSingleInstance -> secondSingleInstance -> thirdSingleInstance -> singleInsance.
+Aceasta abominatie m-a impus sa schimb un pic singletonul DBCSVService astfel incat clasele sa se incarce in ordinea urmatoare in mai multe stadii, pentru ca crearea clasei la o stadie necesita informatiile din stadiile precedente. Deci, practic singletonul pastreaza 5 instante care contin o cantitate diferita de informatii si care se construiau din instantele precedente: firstSingleInstance -> secondSingleInstance -> thirdSingleInstance -> fourthSingleInstance -> singleInsance.
 
 Se putea de creat clasa intr-un mod mai comprehensiv? DA. Am acum timp pentru asta? Nope, profii au decis sa ne bacseasca cu teme acum, in ajun de sesiune...
 

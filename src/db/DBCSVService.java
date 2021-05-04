@@ -22,15 +22,26 @@ public class DBCSVService {
     private static DBCSVService secondSingleInstance = null;
     private static DBCSVService firstSingleInstance = null;
     private static DBCSVService thirdSingleInstance = null;
+    private static DBCSVService fourthSingleInstance = null;
 
     private List<String> fileList;
 
 
 
     List<Account> accountList;
+
+    public List<Order> getOrderList() {
+        return orderList;
+    }
+
     List<Order> orderList;
     List<Delivery> deliveryList;
     List<MenuItem> menuItemList;
+
+    public List<Account> getEstablishmentList() {
+        return establishmentList;
+    }
+
     List<Account> establishmentList;
 
 
@@ -62,15 +73,22 @@ public class DBCSVService {
         if(nrInstance == 3)
             return thirdSingleInstance;
 
+        if(fourthSingleInstance == null){
+            fourthSingleInstance = new DBCSVService(4);
+        }
+
+        if(nrInstance == 4)
+            return fourthSingleInstance;
+
         if (singleInstance == null)
-            singleInstance = new DBCSVService(4);
+            singleInstance = new DBCSVService(5);
         return singleInstance;
     }
 
     private DBCSVService(int stage) {
         if(stage == 1) {
             fileList = Arrays.asList(   "customers", "couriers", "establishments", "menuItems", "orders", "deliveries",
-                    "establishment_menuItem", "order_menuItem");
+                    "establishment_menuItem", "order_menuItem", "courier_delivery", "customer_order", "logger");
 
             initiateFiles();
 
@@ -79,18 +97,24 @@ public class DBCSVService {
         }
         else if(stage == 2) {
             menuItemList = firstSingleInstance.menuItemList;
-            orderList = readAllOrdersFromCSV();
+
             establishmentList = readAllEstablishmentsFromCSV();
         }
         else if(stage == 3) {
 
             menuItemList = secondSingleInstance.menuItemList;
-            orderList = secondSingleInstance.orderList;
             establishmentList = secondSingleInstance.establishmentList;
+            orderList = readAllOrdersFromCSV();
+
+        }
+        else if(stage == 4){
+            menuItemList = thirdSingleInstance.menuItemList;
+            establishmentList = thirdSingleInstance.establishmentList;
+            orderList = thirdSingleInstance.orderList;
 
             deliveryList = readAllDeliveriesFromCSV();
         }
-        else{
+        else {
             menuItemList = thirdSingleInstance.menuItemList;
             orderList = thirdSingleInstance.orderList;
             establishmentList = thirdSingleInstance.establishmentList;
@@ -132,6 +156,8 @@ public class DBCSVService {
                 fw.write(record + '\n');
                 fw.close();
 
+                addLog("Customer " + ((Customer)o).getId() + " was added");
+
                 return;
             }
 
@@ -140,7 +166,7 @@ public class DBCSVService {
                 FileWriter fw = new FileWriter("data/couriers.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-
+                addLog("Courier " + ((Courier)o).getId() + " was added");
                 return;
             }
 
@@ -154,10 +180,12 @@ public class DBCSVService {
                 fw = new FileWriter("data/establishment_menuItem.csv", true);
                 SortedMap<MenuItem, Integer> menu = ((Establishment)o).getMenu();
                 for(MenuItem menuItem: menu.keySet()) {
-                    System.out.println(menuItem);
                     fw.write(((Establishment) o).getId() + ',' + menuItem.getId() + ',' + menu.get(menuItem) + '\n');
                 }
                 fw.close();
+
+                addLog("Establishment " + ((Establishment)o).getId() + " was added");
+
                 return;
             }
 
@@ -167,7 +195,7 @@ public class DBCSVService {
                 FileWriter fw = new FileWriter("data/menuItems.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-
+                addLog("MenuItem " + ((MenuItem)o).getId() + " was added");
                 return;
 
             }
@@ -185,7 +213,7 @@ public class DBCSVService {
                     fw.write(((Order) o).getId() + ',' + menuItem.getId() + ',' + menuItemList.get(menuItem) + '\n');
                 }
                 fw.close();
-
+                addLog("Order " + ((Order)o).getId() + " was added");
                 return;
 
             }
@@ -197,6 +225,7 @@ public class DBCSVService {
                 fw.write(record + '\n');
                 fw.close();
 
+                addLog("Delivery " + ((Delivery)o).getId() + " was added");
                 return;
 
             }
@@ -284,6 +313,10 @@ public class DBCSVService {
                 fw.write(record + '\n');
                 fw.close();
 
+                addLog("Establishment " + ((Establishment)o1).getId() +
+                        " added MenuItem " + ((MenuItem)o2).getId() +
+                        " in quantity of " + ((Establishment)o1).getMenu().get((MenuItem)o2));
+
                 return;
             }
 
@@ -294,6 +327,32 @@ public class DBCSVService {
                 fw.write(record + '\n');
                 fw.close();
 
+                addLog("Order + " + ((Order)o1).getId() +
+                        " contains MenuItem " + ((MenuItem)o2).getId() +
+                        " in quantity of " + ((Order)o1).getMenuItemList().get((MenuItem)o2));
+
+                return;
+            }
+
+            if(o1 instanceof Courier && o2 instanceof Delivery) {
+                String record = (((Courier)o1).getId() + ',' + ((Delivery)o2).getId());
+
+                FileWriter fw = new FileWriter("data/courier_delivery.csv", true);
+                fw.write(record + '\n');
+                fw.close();
+                addLog("Courier " + ((Courier)o1).getId() +
+                        " took Delivery " + ((Delivery)o2).getId());
+                return;
+            }
+
+            if(o1 instanceof Customer && o2 instanceof Order) {
+                String record = (((Customer)o1).getId() + ',' + ((Order)o2).getId());
+
+                FileWriter fw = new FileWriter("data/customer_order.csv", true);
+                fw.write(record + '\n');
+                fw.close();
+                addLog("Customer " + ((Customer)o1).getId() +
+                        " made Delivery " + ((Order)o2).getId());
                 return;
             }
 
@@ -337,17 +396,23 @@ public class DBCSVService {
         return menu;
     }
     // ---------------------- READERS FOR LIST COMPOSING ---------------------
-    public List<Delivery> readDeliveriesFromCSV(String courierId) {
+    public List<Delivery> readDeliveriesFromCSV(String id) {
         List<Delivery> deliveryList = new ArrayList<>();
         try {
 
-            Scanner sc = new Scanner(new File("data/deliveries.csv"));
+            Scanner sc = new Scanner(new File("data/courier_delivery.csv"));
 
             while(sc.hasNextLine()) {
                 String record = sc.nextLine();
                 String[] data = record.split(",");
-                if(data[2].equals(courierId)) {
-                    Delivery delivery = Delivery.readFromCSV(record);
+                if(data[0].equals(id)) {
+                    Delivery delivery =
+                            this.deliveryList.stream()
+                                    .reduce(null, (pred, curr) -> {
+                                        if(curr.getId().equals(data[1]))
+                                            pred = curr;
+                                        return pred;
+                                    });
                     deliveryList.add(delivery);
                 }
             }
@@ -361,17 +426,23 @@ public class DBCSVService {
         return deliveryList;
     }
 
-    public List<Order> readOrdersFromCSV(String customerId) {
+    public List<Order> readOrdersFromCSV(String id) {
         List<Order> orderList = new ArrayList<>();
         try {
 
-            Scanner sc = new Scanner(new File("data/orders.csv"));
+            Scanner sc = new Scanner(new File("data/customer_order.csv"));
 
             while(sc.hasNextLine()) {
                 String record = sc.nextLine();
                 String[] data = record.split(",");
-                if(data[4].equals(customerId)) {
-                    Order order = Order.readFromCSV(record);
+                if(data[0].equals(id)) {
+                    Order order =
+                            this.orderList.stream()
+                                    .reduce(null, (pred, curr) -> {
+                                        if(curr.getId().equals(data[1]))
+                                            pred = curr;
+                                        return pred;
+                                    });
                     orderList.add(order);
                 }
             }
@@ -497,6 +568,16 @@ public class DBCSVService {
             System.out.println(e.getMessage());
         }
         return menuItemList;
+    }
+    public void addLog(String log) {
+        try {
+            FileWriter fw = new FileWriter("data/logger.csv", true);
+            fw.write(log + ',' + (new Date()) + '\n');
+            fw.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return;
     }
 
 }

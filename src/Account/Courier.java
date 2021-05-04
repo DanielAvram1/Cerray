@@ -62,7 +62,7 @@ public class Courier extends Worker {
         String lastName = data[5];
         int salary = Integer.parseInt(data[6]);
         String meanOfTransport = data[7];
-        List<Delivery> deliveryList = DBCSVService.getInstance(3).readDeliveriesFromCSV(id);
+        List<Delivery> deliveryList = DBCSVService.getInstance(4).readDeliveriesFromCSV(id);
         return new Courier(id, firstName, lastName, email, phoneNumber, salary, meanOfTransport, password, deliveryList);
     }
 

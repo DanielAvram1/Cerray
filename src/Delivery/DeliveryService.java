@@ -15,7 +15,7 @@ public class DeliveryService {
     static public Delivery makeDelivery() throws Exception{
         Order order = OrderService.chooseOrder();
 
-        Delivery delivery = new Delivery(order, new Date(), null);
+        Delivery delivery = new Delivery(order, new Date(), new Date());
 
         DB.getInstance().deliveryList.add(delivery);
 

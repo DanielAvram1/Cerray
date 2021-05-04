@@ -70,3 +70,37 @@ Dupa logare sau inregistrare cu o anumita entitate, apare posibilitatea rularii 
 
 # NELAMURIRI
 wow so empty 
+
+# ETAPA II
+Adaugarea fisierelor CSV
+
+Au fost adaugate fisiere CSV si functiile care sa le poata citi, crea instante ale claselor din informatiile din CSV si insera sau sterge informatii din acele CSV. 
+
+## Singletonul DBCSVService
+
+Clasa DBCSVService reprezinta clasa care incorporeaza functiile ajutatoare pentru manipularea CSVurilor, precum si instantiaza fisierele care lipsesc si introduc obiectele pastrate in CSV in program. Din moment ce unele clase depind de altele, am fost nevoit sa modelez clasele ca tabele intr-o baza de date relationale, ceea ce a venit cu unele schimbari pentru clasele principale ale programului.
+
+## Schimbari in clasele principale
+Clasele Customer, Courier, Establishment, Delivery, MenuItem, Order au fost modificate in modul urmator:
+1. A fost adaugat campul id pentru a diferentia clasele intre ele
+2. A fost scrisa functia statica readFromCSV() care primeste ca parametru un string care este parsat intr-un obiect de tipul clasei corespunzatoare (acum am realizat ca se putea doar de facut un constructor separat ce primea ca parametru acel csv)
+3. Desigur, a fost adaugata functia toCSV() care transforma informatia unei clase intr-un string de format csv care poate fi inclus intr-un fisier csv
+
+Din moment ce unele clase depindeau de altele, incarcarea obiectelor din csv trebuia facuta pe anumite stadii. 
+1. Mai intai, DBCSVService incarca MenuItemList.
+2. Apoi incarca OrderList si EstablishmentList care contin obiecte de tip MenuItem.
+3. Se incarca DeliveryList. clasa Delivery contine obiecte de tipul Order si Establishment.
+4. Se incarca celelalte clase care depind de clasele de mai sus.
+
+Aceasta abominatie m-a impus sa schimb un pic singletonul DBCSVService astfel incat clasele sa se incarce in ordinea urmatoare in mai multe stadii, pentru ca crearea clasei la o stadie necesita informatiile din stadiile precedente. Deci, practic singletonul pastreaza 4 instante care contin o cantitate diferita de informatii si care se construiau din instantele precedente: firstSingleInstance -> secondSingleInstance -> thirdSingleInstance -> singleInsance.
+
+Se putea de creat clasa intr-un mod mai comprehensiv? DA. Am acum timp pentru asta? Nope, profii au decis sa ne bacseasca cu teme acum, in ajun de sesiune...
+
+## TO DO
+- [ ] De cautat posibile bugguri.
+- [ ] De facut un refactoring turbat, in special de schimbat denumirile unor functii in unele mai comprehensive si de introdus clase Template. Multe functii sunt identice, se deosebeste doar clasele la care se face casting.
+- [ ] Poate de adaugat o Super-Super clasa care va fi stramosul tuturor claselor pastrate in csv pentru a incorpora campul id si pentru aface override la functii repetitive.
+
+## NELAMURIRI
+If bed bugs live in beds... where do cockroaches live? 0_0
+(Sper ca la acest repositoriu se uita doar laborantul)

@@ -145,33 +145,31 @@ public class DBCSVService {
         }
     }
 
-    public void insert(Object o) {
+    public void insert(DBEntity o) {
         try {
+
+            String record = o.toCSV();
+
             if(o instanceof Customer) {
-
-
-                String record = ((Customer)o).toCSV();
 
                 FileWriter fw = new FileWriter("data/customers.csv", true);
                 fw.write(record + '\n');
                 fw.close();
 
-                addLog("Customer " + ((Customer)o).getId() + " was added");
+                addLog("Customer " + o.getId() + " was added");
 
                 return;
             }
 
             if(o instanceof Courier) {
-                String record = ((Courier)o).toCSV();
                 FileWriter fw = new FileWriter("data/couriers.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-                addLog("Courier " + ((Courier)o).getId() + " was added");
+                addLog("Courier " + o.getId() + " was added");
                 return;
             }
 
             if(o instanceof Establishment) {
-                String record = ((Establishment)o).toCSV();
 
                 FileWriter fw = new FileWriter("data/establishments.csv", true);
                 fw.write(record + '\n');
@@ -180,28 +178,26 @@ public class DBCSVService {
                 fw = new FileWriter("data/establishment_menuItem.csv", true);
                 SortedMap<MenuItem, Integer> menu = ((Establishment)o).getMenu();
                 for(MenuItem menuItem: menu.keySet()) {
-                    fw.write(((Establishment) o).getId() + ',' + menuItem.getId() + ',' + menu.get(menuItem) + '\n');
+                    fw.write(o.getId() + ',' + menuItem.getId() + ',' + menu.get(menuItem) + '\n');
                 }
                 fw.close();
 
-                addLog("Establishment " + ((Establishment)o).getId() + " was added");
+                addLog("Establishment " + o.getId() + " was added");
 
                 return;
             }
 
             if(o instanceof MenuItem) {
-                String record = ((MenuItem)o).toCSV();
 
                 FileWriter fw = new FileWriter("data/menuItems.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-                addLog("MenuItem " + ((MenuItem)o).getId() + " was added");
+                addLog("MenuItem " + o.getId() + " was added");
                 return;
 
             }
 
             if(o instanceof Order) {
-                String record = ((Order)o).toCSV();
 
                 FileWriter fw = new FileWriter("data/orders.csv", true);
                 fw.write(record + '\n');
@@ -210,22 +206,21 @@ public class DBCSVService {
                 fw = new FileWriter("data/order_menuItem.csv", true);
                 SortedMap<MenuItem, Integer> menuItemList = ((Order)o).getMenuItemList();
                 for(MenuItem menuItem: menuItemList.keySet()) {
-                    fw.write(((Order) o).getId() + ',' + menuItem.getId() + ',' + menuItemList.get(menuItem) + '\n');
+                    fw.write(o.getId() + ',' + menuItem.getId() + ',' + menuItemList.get(menuItem) + '\n');
                 }
                 fw.close();
-                addLog("Order " + ((Order)o).getId() + " was added");
+                addLog("Order " + o.getId() + " was added");
                 return;
 
             }
 
             if(o instanceof Delivery) {
-                String record = ((Delivery)o).toCSV();
 
                 FileWriter fw = new FileWriter("data/deliveries.csv", true);
                 fw.write(record + '\n');
                 fw.close();
 
-                addLog("Delivery " + ((Delivery)o).getId() + " was added");
+                addLog("Delivery " + o.getId() + " was added");
                 return;
 
             }
@@ -257,43 +252,43 @@ public class DBCSVService {
         temp.renameTo(old);
     }
 
-    public void delete(Object o) {
+    public void delete(DBEntity o) {
         try {
             if(o instanceof Customer) {
 
-                deleteById("data/customers.csv", ((Customer)o).getId(), 0);
+                deleteById("data/customers.csv", o.getId(), 0);
 
                 return;
             }
 
             if(o instanceof Courier) {
-                deleteById("data/couriers.csv", ((Courier)o).getId(), 0);
+                deleteById("data/couriers.csv", o.getId(), 0);
                 return;
             }
 
             if(o instanceof Establishment) {
-                deleteById("data/establishment.csv", ((Establishment)o).getId(), 0);
-                deleteById("data/establishment_menuItem.csv", ((Establishment)o).getId(), 0);
+                deleteById("data/establishment.csv", o.getId(), 0);
+                deleteById("data/establishment_menuItem.csv", o.getId(), 0);
                 return;
             }
 
             if(o instanceof MenuItem) {
-                deleteById("data/menuItem.csv", ((MenuItem)o).getId(), 0);
-                deleteById("data/establishment_menuItem.csv", ((MenuItem)o).getId(), 1);
+                deleteById("data/menuItem.csv", o.getId(), 0);
+                deleteById("data/establishment_menuItem.csv", o.getId(), 1);
 
                 return;
 
             }
 
             if(o instanceof Order) {
-                deleteById("data/menuItem.csv", ((Order)o).getId(), 0);
+                deleteById("data/menuItem.csv", o.getId(), 0);
 
                 return;
 
             }
 
             if(o instanceof Delivery) {
-                deleteById("data/deliveries.csv", ((Delivery)o).getId(), 0);
+                deleteById("data/deliveries.csv", o.getId(), 0);
 
                 return;
 
@@ -303,56 +298,56 @@ public class DBCSVService {
         }
     }
 
-    public void insertAsoc(Object o1, Object o2) {
+    public void insertAsoc(DBEntity o1, DBEntity o2) {
         try {
 
             if(o1 instanceof Establishment && o2 instanceof MenuItem) {
-                String record = ((Establishment)o1).getId() + ',' + ((MenuItem)o2).getId() + ',' + ((Establishment)o1).getMenu().get((MenuItem)o2);
+                String record = o1.getId() + ',' + o2.getId() + ',' + ((Establishment)o1).getMenu().get((MenuItem)o2);
 
                 FileWriter fw = new FileWriter("data/establishment_menuItem.csv", true);
                 fw.write(record + '\n');
                 fw.close();
 
-                addLog("Establishment " + ((Establishment)o1).getId() +
-                        " added MenuItem " + ((MenuItem)o2).getId() +
+                addLog("Establishment " + o1.getId() +
+                        " added MenuItem " + o2.getId() +
                         " in quantity of " + ((Establishment)o1).getMenu().get((MenuItem)o2));
 
                 return;
             }
 
             if(o1 instanceof Order && o2 instanceof MenuItem) {
-                String record = ((Order)o1).getId() + ',' + ((MenuItem)o2).getId() + ',' + ((Order)o1).getMenuItemList().get((MenuItem)o2);
+                String record = o1.getId() + ',' + o2.getId() + ',' + ((Order)o1).getMenuItemList().get((MenuItem)o2);
 
                 FileWriter fw = new FileWriter("data/order_menuItem.csv", true);
                 fw.write(record + '\n');
                 fw.close();
 
-                addLog("Order + " + ((Order)o1).getId() +
-                        " contains MenuItem " + ((MenuItem)o2).getId() +
+                addLog("Order + " + o1.getId() +
+                        " contains MenuItem " + o2.getId() +
                         " in quantity of " + ((Order)o1).getMenuItemList().get((MenuItem)o2));
 
                 return;
             }
 
             if(o1 instanceof Courier && o2 instanceof Delivery) {
-                String record = (((Courier)o1).getId() + ',' + ((Delivery)o2).getId());
+                String record = (o1.getId() + ',' + o2.getId());
 
                 FileWriter fw = new FileWriter("data/courier_delivery.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-                addLog("Courier " + ((Courier)o1).getId() +
-                        " took Delivery " + ((Delivery)o2).getId());
+                addLog("Courier " + o1.getId() +
+                        " took Delivery " + o2.getId());
                 return;
             }
 
             if(o1 instanceof Customer && o2 instanceof Order) {
-                String record = (((Customer)o1).getId() + ',' + ((Order)o2).getId());
+                String record = (o1.getId() + ',' + o2.getId());
 
                 FileWriter fw = new FileWriter("data/customer_order.csv", true);
                 fw.write(record + '\n');
                 fw.close();
-                addLog("Customer " + ((Customer)o1).getId() +
-                        " made Delivery " + ((Order)o2).getId());
+                addLog("Customer " + o1.getId() +
+                        " made Delivery " + o2.getId());
                 return;
             }
 

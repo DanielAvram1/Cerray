@@ -44,7 +44,8 @@ public class Courier extends Worker {
                 '}';
     }
 
-    public String toCSV() {
+    @Override
+    protected String toCSV() {
 
         return  super.toCSV() + ',' +
                 this.meanOfTransport;

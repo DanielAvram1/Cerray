@@ -104,8 +104,7 @@ A fost adaugat logger.csv care contine informatii despre unele actiuni facute de
 ## TO DO
 - [ ] De cautat posibile bugguri.
 - [ ] De facut un refactoring turbat, in special de schimbat denumirile unor functii in unele mai comprehensive si de introdus clase Template. Multe functii sunt identice, se deosebeste doar clasele la care se face casting.
-- [ ] Poate de adaugat o Super-Super clasa care va fi stramosul tuturor claselor pastrate in csv pentru a incorpora campul id si pentru aface override la functii repetitive.
+- [x] (DBEntity, poate va incorpora si functiile insert si delete) Poate de adaugat o Super-Super clasa care va fi stramosul tuturor claselor pastrate in csv pentru a incorpora campul id si pentru aface override la functii repetitive.
 
 ## NELAMURIRI
-If bed bugs live in beds... where do cockroaches live? 0_0
-(Sper ca la acest repositoriu se uita doar laborantul)
+Cum as putea sa transmit metode statice abstracte din supraclasa in subclasa

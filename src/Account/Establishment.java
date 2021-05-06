@@ -124,8 +124,8 @@ public class Establishment extends Account{
                 ", description='" + description + '\'' +
                 '}';
     }
-
-    public String toCSV() {
+    @Override
+    protected String toCSV() {
         return  super.toCSV() + ',' +
                 this.name + ',' +
                 this.address + ',' +

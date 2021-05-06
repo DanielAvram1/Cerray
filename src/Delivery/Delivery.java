@@ -6,21 +6,21 @@ import Order.Order;
 import Account.Courier;
 import db.DB;
 import db.DBCSVService;
+import db.DBEntity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class Delivery {
+public class Delivery extends DBEntity {
 
-    String id;
     Order order;
     Date pickedDate;
     Date deliveryDate;
 
     public Delivery(Order order) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.order = order;
         this.pickedDate = null;
         this.deliveryDate = null;
@@ -28,7 +28,7 @@ public class Delivery {
     }
 
     public Delivery(Order order, Date pickedDate, Date deliveryDate) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.order = order;
         this.pickedDate = pickedDate;
         this.deliveryDate = deliveryDate;
@@ -59,10 +59,6 @@ public class Delivery {
         this.deliveryDate = deliveryDate;
     }
 
-    public String getId() {
-        return id;
-    }
-
     @Override
     public String toString() {
         return "From: " + order.getEstablishment().getAddress() +
@@ -71,7 +67,8 @@ public class Delivery {
                 "\tDelivered: " + (deliveryDate == null ? "Not yet delivered" : deliveryDate);
     }
 
-    public String toCSV() {
+    @Override
+    protected String toCSV() {
         return  id + ',' +
                 order.getId() + ',' +
                 pickedDate.toString() + ',' +

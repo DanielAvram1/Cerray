@@ -21,6 +21,7 @@ public abstract class Worker extends Person{
         this.salary = salary;
     }
 
+    @Override
     protected String toCSV() {
         return  super.toCSV() + ',' +
                 salary;

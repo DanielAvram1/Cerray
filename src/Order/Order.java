@@ -7,12 +7,13 @@ import Delivery.Delivery;
 import MenuItem.MenuItem;
 import db.DB;
 import db.DBCSVService;
+import db.DBEntity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Order {
+public class Order extends DBEntity {
 
     String id;
     Date date;
@@ -62,10 +63,6 @@ public class Order {
         this.delivered = delivered;
     }
 
-    public String getId() {
-        return this.id;
-    }
-
     public SortedMap<MenuItem, Integer> getMenuItemList() {
         return new TreeMap<>(menuItemList);
     }
@@ -76,7 +73,8 @@ public class Order {
         return "From:" + establishment.getName() + " \tTo: " + address + "\tDate: " + date + "\t" + (delivered ? "Delivered" : "Not Delivered");
     }
 
-    public String toCSV() {
+    @Override
+    protected String toCSV() {
         return  id + ',' +
                 date.toString() + ',' +
                 address + ',' +

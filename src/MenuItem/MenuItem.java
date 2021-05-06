@@ -1,31 +1,32 @@
 package MenuItem;
 
 import db.DBCSVService;
+import db.DBEntity;
 
 import java.util.UUID;
 
-public class MenuItem implements Comparable{
+public class MenuItem extends DBEntity implements Comparable  {
 
-    String id;
     String name;
     double price;
 
 
     public MenuItem(String name, double price) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.name = name;
         this.price = price;
         DBCSVService.getInstance().insert(this);
     }
 
     public MenuItem(String name) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.name = name;
         this.price = 0;
         DBCSVService.getInstance().insert(this);
     }
 
     public MenuItem(MenuItem menuItem) {
+        super();
         name = menuItem.getName();
         price = menuItem.getPrice();
         DBCSVService.getInstance().insert(this);
@@ -53,10 +54,6 @@ public class MenuItem implements Comparable{
         this.price = price;
     }
 
-    public String getId() {
-        return id;
-    }
-
     @Override
     public String toString() {
         return "MenuItem{" +
@@ -71,7 +68,8 @@ public class MenuItem implements Comparable{
         return this.name.compareTo(menuItem.name);
     }
 
-    public String toCSV() {
+    @Override
+    protected String toCSV() {
         return  id + ',' +
                 name + ',' +
                 price;

@@ -2,23 +2,22 @@ package Account;
 
 import java.util.UUID;
 
-public class Account {
+public class Account extends db.DBEntity {
     static int nrAccounts = 0;
 
-    protected String id;
     protected String email;
     protected String phoneNumber;
     protected String password;
 
     public Account(Account account) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.email = account.email;
         this.phoneNumber = account.phoneNumber;
         this.password = account.password;
     }
 
     public Account( String email, String phoneNumber, String password) {
-        this.id = UUID.randomUUID().toString();;
+        super();
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
@@ -63,8 +62,7 @@ public class Account {
         this.password = password;
     }
 
-    public String getId() { return id;}
-
+    @Override
     protected String toCSV() {
         return  this.id + ',' +
                 this.email + ',' +

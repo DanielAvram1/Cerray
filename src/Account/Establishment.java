@@ -18,7 +18,8 @@ public class Establishment extends Account{
     SortedMap<MenuItem, Integer> menu;
     double income;
 
-    public Establishment(Account account, String name, String address, String type, String description , SortedMap<MenuItem, Integer> menu) {
+    public Establishment(Account account, String name, String address, String type,
+                         String description , SortedMap<MenuItem, Integer> menu) {
         super(account);
         this.name = name;
         this.address = address;
@@ -29,7 +30,8 @@ public class Establishment extends Account{
         DBCSVService.getInstance().insert(this);
     }
 
-    public Establishment(String id, String email, String phoneNumber, String password, String name, String address, String type, String description, SortedMap<MenuItem, Integer> menu, double income) {
+    public Establishment(String id, String email, String phoneNumber, String password, String name, String address,
+                         String type, String description, SortedMap<MenuItem, Integer> menu, double income) {
         super(id, email, phoneNumber, password);
         this.name = name;
         this.address = address;

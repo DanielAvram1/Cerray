@@ -41,8 +41,8 @@ public class App {
                             break;
                         }
                         if(account instanceof Establishment){
-                            EstablishmentService establishmentService = new EstablishmentService((Establishment)account);
-                            establishmentService.session();
+                            EstablishmentSession establishmentSession = new EstablishmentSession((Establishment)account);
+                            establishmentSession.session();
                             break;
                         }
                         if(account instanceof Courier){

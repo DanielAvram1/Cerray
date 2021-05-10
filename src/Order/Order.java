@@ -3,26 +3,53 @@ package Order;
 import Account.Customer;
 import Account.Establishment;
 import MenuItem.MenuItem;
+import db.DBEntity;
+import db.DBService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.SortedMap;
+import javax.swing.plaf.nimbus.State;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
-public class Order {
+public class Order extends DBEntity {
     Date date;
     String address;
-    SortedMap<MenuItem, Integer> menuItemList;
-    Establishment establishment;
-    Customer receiver;
+    SortedMap<String, Integer> menuItemIdList;
+    String establishmentId;
+    String customerId;
     boolean delivered;
 
-    public Order(Date date, String address, Customer customer, Establishment establishment, SortedMap<MenuItem, Integer> menuItemList) {
+    public Order(Date date, String address, String customerId, String establishmentId, SortedMap<String, Integer> menuItemIdList) {
+        super();
         this.date = date;
-        this.menuItemList = menuItemList;
+        this.menuItemIdList = menuItemIdList;
         this.address = address;
-        this.receiver = customer;
-        this.establishment = establishment;
+        this.customerId = customerId;
+        this.establishmentId = establishmentId;
         this.delivered = false;
+    }
+
+    public Order(ResultSet rs) throws SQLException {
+        super(rs.getString("ID"));
+        this.date = rs.getDate("DATE");
+        this.address = rs.getString("ADDRESS");
+        this.establishmentId = rs.getString("ESTABLISHMENT_ID");
+        this.customerId = rs.getString("CUSTOMER_ID");
+        this.delivered = rs.getBoolean("DELIVERED");
+
+        this.menuItemIdList = new TreeMap<>();
+
+        String query = "SELECT MENU_ITEM_ID, QUANTITY " +
+                "FROM ORDER_ASOC_MENU_ITEM" +
+                "WHERE ORDER_ID = " + this.getId();
+
+        ResultSet menuItemRs = DBService.getInstance().select(query);
+
+        while(menuItemRs.next()) {
+            try {
+                this.menuItemIdList.put(menuItemRs.getString("MENU_ITEM_ID"), menuItemRs.getInt("QUANTITY"));
+            } catch (SQLException ignored) {}
+        }
     }
 
     public Date getDate() {
@@ -34,11 +61,23 @@ public class Order {
     }
 
     public Establishment getEstablishment() {
-        return establishment;
+        String query = "SELECT * FROM ESTABLISHMENTS WHERE ID = " + this.establishmentId;
+        ResultSet rs = DBService.getInstance().select(query);
+        try {
+            return new Establishment(rs);
+        } catch (SQLException ignored){
+            return null;
+        }
     }
 
     public Customer getReceiver() {
-        return receiver;
+        String query = "SELECT * FROM CUSTOMERS WHERE ID = " + this.customerId;
+        ResultSet rs = DBService.getInstance().select(query);
+        try{
+            return new Customer(rs);
+        } catch (SQLException ignored) {
+            return null;
+        }
     }
 
     public String getAddress() {
@@ -53,6 +92,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "From:" + establishment.getName() + " \tTo: " + address + "\tDate: " + date + "\t" + (delivered ? "Delivered" : "Not Delivered");
+        return "From:" + getEstablishment().getName() + " \tTo: " + address + "\tDate: " + date + "\t" + (delivered ? "Delivered" : "Not Delivered");
     }
 }

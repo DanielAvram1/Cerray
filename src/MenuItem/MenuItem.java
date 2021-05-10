@@ -1,16 +1,23 @@
 package MenuItem;
 
-public class MenuItem implements Comparable{
+import db.DBEntity;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class MenuItem extends DBEntity implements Comparable {
     String name;
     double price;
 
 
     public MenuItem(String name, double price) {
+        super();
         this.name = name;
         this.price = price;
     }
 
     public MenuItem(String name) {
+        super();
         this.name = name;
         this.price = 0;
     }
@@ -18,6 +25,12 @@ public class MenuItem implements Comparable{
     public MenuItem(MenuItem menuItem) {
         name = menuItem.getName();
         price = menuItem.getPrice();
+    }
+
+    public MenuItem(ResultSet rs) throws SQLException {
+        super(rs.getString("ID"));
+        this.name = rs.getString("NAME");
+        this.price = rs.getDouble("PRICE");
     }
 
     public String getName() {
@@ -47,6 +60,6 @@ public class MenuItem implements Comparable{
     @Override
     public int compareTo(Object o) {
         MenuItem menuItem = (MenuItem)o;
-        return this.name.compareTo(menuItem.name);
+        return this.getId().compareTo(menuItem.getId());
     }
 }

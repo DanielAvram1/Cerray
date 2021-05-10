@@ -4,44 +4,66 @@ import Account.Customer;
 import Account.Establishment;
 import Order.Order;
 import Account.Courier;
+import db.DB;
+import db.DBEntity;
+import db.DBService;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
-public class Delivery {
-    Order order;
-    Courier courier;
+public class Delivery extends DBEntity {
+    String orderId;
+    String courierId;
     Date pickedDate;
     Date deliveryDate;
 
-    public Delivery(Order order) {
-        this.order = order;
-        this.courier = null;
+    public Delivery(String orderId) {
+        super();
+        this.orderId = orderId;
+        this.courierId = null;
         this.pickedDate = null;
         this.deliveryDate = null;
     }
 
-    public Delivery(Order order, Courier courier, Date pickedDate, Date deliveryDate) {
-        this.order = order;
-        this.courier = courier;
+    public Delivery(String orderId, String courierId, Date pickedDate, Date deliveryDate) {
+        this.orderId = orderId;
+        this.courierId = courierId;
         this.pickedDate = pickedDate;
         this.deliveryDate = deliveryDate;
 
     }
 
-    public Order getOrder() {
-        return order;
+    public Delivery(ResultSet rs) throws SQLException {
+        super(rs.getString("ID"));
+        this.orderId = rs.getString("ORDER_ID");
+        this.courierId = rs.getString("COURIER_ID");
+        this.pickedDate = rs.getDate("PICKED_DATE");
+        this.deliveryDate = rs.getDate("DELIVERY_DATE");
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public Order getOrder() throws SQLException {
+        String query = "SELECT * FROM ORDERS WHERE ID = " + this.orderId;
+        ResultSet rs = DBService.getInstance().select(query);
+        return new Order(rs);
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public Courier getCourier() {
-        return courier;
+        String query = "SELECT * FROM COURIERS WHERE ID = " + this.orderId;
+        ResultSet rs = DBService.getInstance().select(query);
+        try{
+            return new Courier(rs);
+        }catch (SQLException ignored) {
+            return null;
+        }
     }
 
-    public void setCourier(Courier courier) {
-        this.courier = courier;
+    public void setCourierId(String courierId) {
+        this.courierId = courierId;
     }
 
     public Date getDeliveryDate() {
@@ -55,9 +77,14 @@ public class Delivery {
 
     @Override
     public String toString() {
-        return "From: " + order.getEstablishment().getAddress() +
-                "\tTo: " + order.getAddress() +
-                "\tPicked: " + this.pickedDate +
-                "\tDelivered: " + (deliveryDate == null ? "Not yet delivered" : deliveryDate);
+        try {
+            return "From: " + getOrder().getEstablishment().getAddress() +
+                    "\tTo: " + getOrder().getAddress() +
+                    "\tBy: " + getCourier().getEmail() +
+                    "\tPicked: " + this.pickedDate +
+                    "\tDelivered: " + (deliveryDate == null ? "Not yet delivered" : deliveryDate);
+        } catch (SQLException throwables) {
+            return "This Delivery does not have an Order, Establishment or a Courier.";
+        }
     }
 }

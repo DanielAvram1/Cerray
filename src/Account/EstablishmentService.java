@@ -22,9 +22,10 @@ public class EstablishmentService {
 
     private static MenuItem getMenuItemByName(Establishment establishment, String name) {
         MenuItem chosenMenuItem = null;
-        for(MenuItem menuItem: establishment.menu.keySet()){
-            if(menuItem.getName().equals(name)){
-                chosenMenuItem = menuItem;
+        for(String menuItemId: establishment.menu.keySet()){
+            MenuItem currMenuItem = MenuItemService.getMenuItemById(menuItemId);
+            if(currMenuItem != null && currMenuItem.getName().equals(name)){
+                chosenMenuItem = currMenuItem;
                 break;
             }
         }
@@ -71,9 +72,12 @@ public class EstablishmentService {
     }
 
     private static void displayMenu(Establishment establishment) {
-        SortedMap<MenuItem, Integer> menu = establishment.menu;
-        for(MenuItem menuItem: menu.keySet()) {
-            System.out.printf("%s\t%f\t%x%n", menuItem.getName(), menuItem.getPrice(), menu.get(menuItem));
+        SortedMap<String, Integer> menu = establishment.menu;
+        for(String menuItemId: menu.keySet()) {
+            MenuItem currMenuItem = MenuItemService.getMenuItemById(menuItemId);
+            if(currMenuItem == null)
+                continue;
+            System.out.printf("%s\t%f\t%x%n", currMenuItem.getName(), currMenuItem.getPrice(), menu.get(currMenuItem));
         }
     }
 
@@ -83,10 +87,10 @@ public class EstablishmentService {
             return null;
         displayMenu(establishment);
 
-        SortedMap<MenuItem, Integer> menu = establishment.menu;
-        SortedMap<MenuItem, Integer> newMenu = new TreeMap<>(menu);
+        SortedMap<String, Integer> menu = establishment.menu;
+        SortedMap<String, Integer> newMenu = new TreeMap<>(menu);
 
-        SortedMap<MenuItem, Integer> orderItems = new TreeMap<>();
+        SortedMap<String, Integer> orderItems = new TreeMap<>();
         double cost = 0;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String input = "";
@@ -112,9 +116,9 @@ public class EstablishmentService {
 
                 cost += chosenMenuItem.getPrice() * quan;
 
-                orderItems.put(chosenMenuItem, quan);
+                orderItems.put(chosenMenuItem.getId(), quan);
 
-                establishment.addQuantity(chosenMenuItem, -quan);
+                establishment.addQuantity(chosenMenuItem.getId(), -quan);
 
             } catch(Exception e) {
                 System.out.println( "Ati introdus numerele gresit; pentru a termina, scrieti done");
@@ -138,7 +142,7 @@ public class EstablishmentService {
             return null;
         establishment.menu = newMenu;
         establishment.income += cost;
-        Order order = new Order(new Date(), address, customer, establishment, orderItems);
+        Order order = new Order(new Date(), address, customer.getId(), establishment.getId(), orderItems);
         DB.getInstance().orderList.add(order);
 
         return order;
@@ -219,8 +223,8 @@ public class EstablishmentService {
 
         MenuItem menuItem = new MenuItem(name, price);
 
-        establishment.addMenuItem(menuItem);
-        establishment.addQuantity(menuItem, quan);
+        establishment.addMenuItem(menuItem.getId());
+        establishment.addQuantity(menuItem.getId(), quan);
         System.out.println("Produsul " + name + " a fost introdus in meniul localului!");
 
     }
@@ -229,7 +233,7 @@ public class EstablishmentService {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
         displayMenu(establishment);
-        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        SortedMap<String, Integer> menu = establishment.menu;
         System.out.println("Alegeti numele produsului pe care doriti sa il stergeti:");
 
         String name;
@@ -294,7 +298,7 @@ public class EstablishmentService {
                             System.out.println("Cantitatea nu poate fi negativa!");
                             break;
                         }
-                        establishment.menu.put(menuItem, quan);
+                        establishment.menu.put(menuItem.getId(), quan);
                         cont = false;
 
                     } catch (Exception e) {
@@ -318,7 +322,7 @@ public class EstablishmentService {
         System.out.println("Alegeti numele produsului pe care doriti sa il modificati:");
         displayMenu(establishment);
 
-        SortedMap<MenuItem, Integer> menu = establishment.menu;
+        SortedMap<String , Integer> menu = establishment.menu;
         String name;
         MenuItem chosenMenuItem = null;
         while(true) {

@@ -17,7 +17,7 @@ public class OrderService {
 
 
     public static void getAdditionalInformation(Order order) {
-        String out = order.getEstablishment().toString() + '\n' + order.getReceiver().toString();
+        String out = order.getEstablishment().toString();
         System.out.println(out);
     }
 

@@ -4,10 +4,14 @@ import Delivery.Delivery;
 import Delivery.DeliveryService;
 import Order.Order;
 import Order.OrderService;
+import com.mysql.cj.jdbc.result.ResultSetImpl;
 import db.DB;
+import db.DBService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,12 +54,22 @@ public class CourierService {
     }
 
     private boolean displayMyDeliveries() {
-        if (courier.deliveryList.size() == 0) {
+
+        if (courier.deliveryIdList.size() == 0) {
             System.out.println("No deliveries to display.");
             return false;
         }
-        for(int i = 0; i<  courier.deliveryList.size(); i++){
-            System.out.println((i + 1) + ". " + courier.deliveryList.get(i));
+
+        for(int i = 0; i<  courier.deliveryIdList.size(); i++){
+            String query = "SELECT * " +
+                    "FROM DELIVERIES " +
+                    "WHERE COURIER_ID = " + this.courier.getId();
+            ResultSet rs = DBService.getInstance().select(query);
+            Delivery delivery = null;
+            try {
+                delivery = new Delivery(rs);
+            } catch (SQLException ignored) {}
+            System.out.println(delivery);
         }
         return true;
     }
@@ -64,9 +78,15 @@ public class CourierService {
 
         List<Delivery> undeliveredDeliveryList = new ArrayList<>();
 
-        for(Delivery delivery: courier.deliveryList){
-            if(delivery.getDeliveryDate() == null)
-                undeliveredDeliveryList.add(delivery);
+        for(String deliveryId: courier.deliveryIdList){
+            String query = "SELECT * FROM DELIVERIES WHERE ID = " + deliveryId;
+            ResultSet rs = DBService.getInstance().select(query);
+            Delivery currDelivery = null;
+            try{
+                currDelivery = new Delivery(rs);
+            } catch (SQLException ignored) {}
+            if(currDelivery.getDeliveryDate() == null)
+                undeliveredDeliveryList.add(currDelivery);
         }
 
         if (undeliveredDeliveryList.size() == 0) {
@@ -94,16 +114,25 @@ public class CourierService {
 
             try {
                 int idx = Integer.parseInt(input);
-                if(idx < 1 || idx > courier.deliveryList.size())
-                    throw new Exception();
+                if(idx < 1 || idx > courier.deliveryIdList.size())
+                    throw new Exception("Indexul este prea mare sau prea mic! Pentru a anula, tapati cancel");
 
-                Order order = courier.deliveryList.get(idx - 1).getOrder();
+                Delivery delivery = null;
+                try{
+                    String query = "SELECT * FROM DELIVERIES WHERE ID = " + courier.deliveryIdList.get(idx - 1);
+                    ResultSet rs = DBService.getInstance().select(query);
+                    delivery = new Delivery(rs);
+                }catch (SQLException ignored){};
+                if(delivery == null) {
+                    throw new Exception("Se pare ca acest Delivery nu mai exista.");
+                }
+                Order order = delivery.getOrder();
                 OrderService.getAdditionalInformation(order);
 
             } catch (NumberFormatException e) {
                 System.out.println("Ati introdus un index gresit! Pentru a anula, tapati cancel");
             } catch(Exception e){
-                System.out.println("Indexul este prea mare sau prea mic! Pentru a anula, tapati cancel");
+                System.out.println(e.getMessage());
             }
         }
 
@@ -153,7 +182,7 @@ public class CourierService {
                 }
                 case "make_delivery" -> {
                     Delivery delivery = DeliveryService.makeDelivery(courier);
-                    courier.deliveryList.add(delivery);
+                    courier.deliveryIdList.add(delivery.getId());
                 }
                 case "display_my_deliveries" -> {
                     displayMyDeliveries();

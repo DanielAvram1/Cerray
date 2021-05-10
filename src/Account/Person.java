@@ -13,8 +13,8 @@ public abstract class Person extends Account{
         this.lastName = lastName;
     }
 
-    public Person(String email, String phoneNumber, String password, String firstName, String lastName) {
-        super(email, phoneNumber, password);
+    public Person(String id, String email, String phoneNumber, String password, String firstName, String lastName) {
+        super(id, email, phoneNumber, password);
         this.firstName = firstName;
         this.lastName = lastName;
     }

@@ -1,6 +1,8 @@
 package Account;
 
-public class Account {
+import db.DBEntity;
+
+public class Account extends DBEntity {
     static int nrAccounts = 0;
 
     protected String email;
@@ -14,6 +16,14 @@ public class Account {
     }
 
     public Account(String email, String phoneNumber, String password) {
+        super();
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+    }
+
+    public Account(String id, String email, String phoneNumber, String password) {
+        super(id);
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;

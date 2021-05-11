@@ -60,6 +60,7 @@ public class MenuItem extends DBEntity implements Comparable {
     @Override
     public int compareTo(Object o) {
         MenuItem menuItem = (MenuItem)o;
+        
         return this.getId().compareTo(menuItem.getId());
     }
 }

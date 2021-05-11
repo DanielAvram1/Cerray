@@ -22,7 +22,7 @@ public class OrderService {
     }
 
     public static List<Order> displayNotDeliveredOrders() {
-        List<Order> orderList = DB.getInstance().orderList;
+        List<Order> orderList = DB.getInstance().getOrderList();
         List<Order> notDeliveredOrderList = new ArrayList<>();
 
         for(Order order: orderList) {

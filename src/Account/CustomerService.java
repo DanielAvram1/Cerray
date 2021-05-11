@@ -19,31 +19,24 @@ public class CustomerService {
     public static Customer register(Account account) throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        List<Account> accountList = DB.getInstance().accountList;
+        System.out.print("Prenume: ");
+        String firstName = in.readLine();
+        System.out.print("Nume: ");
+        String lastName = in.readLine();
 
-        while(true) {
+        System.out.print("Adresa: ");
+        String defaultAddress = in.readLine();
 
+        System.out.println("Ati introdus toate informatiile necesare. Confirmati inregistrarea? Y/N");
 
-            System.out.print("Prenume: ");
-            String firstName = in.readLine();
-            System.out.print("Nume: ");
-            String lastName = in.readLine();
+        String input = in.readLine();
+        if(input.equals("N")) return null;
 
-            System.out.print("Adresa: ");
-            String defaultAddress = in.readLine();
+        Customer customer = new Customer(account, firstName, lastName, defaultAddress);
 
-            System.out.println("Ati introdus toate informatiile necesare. Confirmati inregistrarea? Y/N");
+        System.out.println("Bun venit in Cerray! Sunteti un Customer inregistrat!");
+        return customer;
 
-            String input = in.readLine();
-            if(input.equals("N")) break;
-
-            Customer customer = new Customer(account, firstName, lastName, defaultAddress);
-            accountList.add(customer);
-
-            System.out.println("Bun venit in Cerray! Sunteti un Customer inregistrat!");
-            return customer;
-        }
-        return null;
     }
 
     private void displayOrders() {

@@ -10,15 +10,18 @@ import Order.Order;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DB {
 
     private static DB single_instance = null;
 
-    public List<Account> accountList;
-    public List<Order> orderList;
-    public List<Delivery> deliveryList;
+//    public List<Account> accountList;
+//    public List<Order> orderList;
+//    public List<Delivery> deliveryList;
 
     public int minCourierSalary;
     private DB() {
@@ -93,6 +96,27 @@ public class DB {
 
     }
 
+    public List<Establishment> getEstablishmentList() {
+        return getAccountList().stream().
+                filter(e -> e instanceof Establishment)
+                .map(e -> (Establishment)e)
+                .collect(Collectors.toList());
+    }
+
+    public List<Courier> getCourierList() {
+        return getAccountList().stream().
+                filter(e -> e instanceof Courier)
+                .map(e -> (Courier)e)
+                .collect(Collectors.toList());
+    }
+
+    public List<Customer> getCustomerList() {
+        return getAccountList().stream().
+                filter(e -> e instanceof Customer)
+                .map(e -> (Customer)e)
+                .collect(Collectors.toList());
+    }
+
     public void displayEstablishments() {
 
         List<Establishment> establishmentList = getEstablishmentList();
@@ -108,36 +132,71 @@ public class DB {
         return single_instance;
     }
 
-    public List<Establishment> getEstablishmentList() {
-        List<Establishment> establishmentList = new ArrayList<>();
+    public List<Account> getAccountList() {
+        List<Account> accountList = new ArrayList<>();
+        String query = "SELECT * FROM ESTABLISHMENTS";
+        ResultSet rs = DBService.getInstance().select(query);
+        try {
+            while(rs.next()) {
+                Establishment establishment = null;
+                try {
+                    establishment = new Establishment(rs);
+                }catch (SQLException ignored){}
+                if (establishment != null) {
+                    accountList.add(establishment);
+                }
+            }
+        }catch (SQLException ignored){}
 
-        for(Account account: accountList) {
-            if(account instanceof Establishment)
-                establishmentList.add((Establishment)account);
-        }
-        return establishmentList;
+        query = "SELECT * FROM COURIERS";
+        rs = DBService.getInstance().select(query);
+        try {
+            while(rs.next()) {
+                Courier courier = null;
+                try {
+                    courier = new Courier(rs);
+                }catch (SQLException ignored){}
+                if (courier != null) {
+                    accountList.add(courier);
+                }
+            }
+        }catch (SQLException ignored){}
+
+        query = "SELECT * FROM CUSTOMERS";
+        rs = DBService.getInstance().select(query);
+        try {
+            while(rs.next()) {
+                Customer customer = null;
+                try {
+                    customer = new Customer(rs);
+                }catch (SQLException ignored){}
+                if (customer != null) {
+                    accountList.add(customer);
+                }
+            }
+        }catch (SQLException ignored){}
+
+        return accountList;
     }
 
-    public List<Courier> getCourierList() {
-        List<Courier> courierList = new ArrayList<>();
-
-        for(Account account: accountList) {
-            if(account instanceof Courier)
-                courierList.add((Courier) account);
+    public List<Order> getOrderList() {
+        List<Order> orderList = new ArrayList<>();
+        String query = "SELECT * FROM ORDERS";
+        ResultSet rs = DBService.getInstance().select(query);
+        try {
+            while (rs.next()) {
+                Order order = null;
+                try {
+                    order = new Order(rs);
+                } catch (SQLException ignored) {
+                }
+                if (order != null) {
+                    orderList.add(order);
+                }
+            }
+        } catch (SQLException ignored) {
         }
-        return courierList;
+        return orderList;
     }
-
-    public List<Customer> getCustomerList() {
-        List<Customer> customerList = new ArrayList<>();
-
-        for(Account account: accountList) {
-            if(account instanceof Customer)
-                customerList.add((Customer)account);
-        }
-        return customerList;
-    }
-
-
 
 }

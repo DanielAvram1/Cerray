@@ -28,6 +28,13 @@ public class Establishment extends Account{
         this.description = description;
         this.menu = new TreeMap<>(menu);
         income = 0;
+
+        String query = String.format("INSERT INTO ESTABLISHMENTS" +
+                        " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %f)",
+                this.getId(), this.email, this.phoneNumber, this.password, this.name,
+                this.address, this.type, this.description, this.income);
+        DBService.getInstance().execute(query);
+
     }
 
     public Establishment(String email, String phoneNumber, String password, String name, String address, String type, String description, SortedMap<String, Integer> menu) {
@@ -44,18 +51,18 @@ public class Establishment extends Account{
         super(  rs.getString("ID"), rs.getString("EMAIL"),
                 rs.getString("PHONENUMBER"), rs.getString("PASSWORD"));
         this.name = rs.getString("NAME");
-        this.description = rs.getString("DESCRITPION");
+        this.description = rs.getString("DESCRIPTION");
         this.address = rs.getString("ADDRESS");
         this.type = rs.getString("TYPE");
         this.income = rs.getDouble("INCOME");
 
         this.menu = new TreeMap<>();
 
-        String query = "SELECT MENU_ITEM_ID, QUANTITY " +
-                "FROM ESTABLISHMENT_ASOC_MENU_ITEM" +
-                "WHERE ESTABLISHMENT_ID = " + this.getId();
+        String query = "SELECT * " +
+                "FROM ESTABLISHMENT_ASOC_MENU_ITEM " +
+                "WHERE ESTABLISHMENT_ID = ?";
 
-        ResultSet menuItemRs = DBService.getInstance().select(query);
+        ResultSet menuItemRs = DBService.getInstance().select(query, this.getId());
 
         while(menuItemRs.next()) {
             try {
@@ -63,6 +70,12 @@ public class Establishment extends Account{
             } catch (SQLException ignored) {}
         }
 
+    }
+
+    public void addIncome(double toAdd) {
+        income += toAdd;
+        String query = "UPDATE ESTABLISHMENTS SET INCOME = INCOME + ? WHERE ID = ?";
+        DBService.getInstance().execute(query, toAdd, getId());
     }
 
     public String getName() {
@@ -107,39 +120,40 @@ public class Establishment extends Account{
     }
 
     public void addMenuItem(String menuItemId) {
-        String query = null;
+        String query;
+        Integer quan = 0;
         if(menu.containsKey(menuItemId)){
-            Integer quan = menu.get(menuItemId);
+            quan = menu.get(menuItemId);
             menu.put(menuItemId, quan + 1);
-
-            query = "UPDATE ESTABLISHMENT_ASOC_MENU_ITEM SET QUANTITY = " + quan.toString() +
-                    "WHERE ESTABLISHMENT_ID = " + this.getId() +
-                    "AND MENU_ITEM_ID = " + menuItemId;
+            quan++;
+            query = "UPDATE ESTABLISHMENT_ASOC_MENU_ITEM SET QUANTITY = ? " +
+                    "WHERE ESTABLISHMENT_ID = ? " +
+                    "AND MENU_ITEM_ID = ?";
 
         }
         else
-            query = "INSERT INTO ESTABLISHMENT_ASOC_MENU_ITEM(ESTABLISHMENT_ID, MENU_ITEM_ID, QUANTITY)" +
+            query = "INSERT INTO ESTABLISHMENT_ASOC_MENU_ITEM(QUANTITY, ESTABLISHMENT_ID, MENU_ITEM_ID)" +
                     "VALUES" +
-                    "(" + this.getId() + ", " + menuItemId + ", " + 0 +")";
-            DBService.getInstance().execute(query);
-            menu.put(menuItemId, 0);
+                    "(?, ?, ?)";
+            DBService.getInstance().execute(query, quan, getId(), menuItemId);
+            menu.put(menuItemId, quan);
     }
 
     public void addQuantity(String menuItemId, Integer quantity){
         String query = null;
         if(menu.containsKey(menuItemId)){
             Integer quan = menu.get(menuItemId);
-            menu.put(menuItemId, quan + 1);
-
-            query = "UPDATE ESTABLISHMENT_ASOC_MENU_ITEM SET QUANTITY = " + quan.toString() +
-                    "WHERE ESTABLISHMENT_ID = " + this.getId() +
-                    "AND MENU_ITEM_ID = " + menuItemId;
+            menu.put(menuItemId, quan + quantity);
+            quantity += quan;
+            query = "UPDATE ESTABLISHMENT_ASOC_MENU_ITEM SET QUANTITY = QUANTITY + ? " +
+                    "WHERE ESTABLISHMENT_ID = ? " +
+                    "AND MENU_ITEM_ID = ?";
         }
         else
-            query = "INSERT INTO ESTABLISHMENT_ASOC_MENU_ITEM(ESTABLISHMENT_ID, MENU_ITEM_ID, QUANTITY)" +
+            query = "INSERT INTO ESTABLISHMENT_ASOC_MENU_ITEM(QUANTITY, ESTABLISHMENT_ID, MENU_ITEM_ID)" +
                     "VALUES" +
-                    "(" + this.getId() + ", " + menuItemId + ", " + quantity +")";
-        DBService.getInstance().execute(query);
+                    "(?, ?, ?)";
+        DBService.getInstance().execute(query, quantity, this.getId(), menuItemId);
         menu.put(menuItemId, quantity);
     }
 

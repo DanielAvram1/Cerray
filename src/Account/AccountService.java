@@ -10,7 +10,7 @@ public class AccountService {
     Account account;
 
     private static Account findAccount(String email, String password) {
-        List<Account> accountList = DB.getInstance().accountList;
+        List<Account> accountList = DB.getInstance().getAccountList();
         for(Account account: accountList) {
 
             if(account.getEmail().equals(email) && account.getPassword().equals(password))
@@ -20,7 +20,9 @@ public class AccountService {
     }
 
     static boolean isEmailLoggedIn( String email) {
-        List<Account> accountList = DB.getInstance().accountList;
+        List<Account> accountList = DB.getInstance().getAccountList();
+        if(accountList == null || accountList.size() == 0)
+            return false;
         for(Account account : accountList) {
             if(account.email.equals(email))
                 return true;
@@ -84,8 +86,6 @@ public class AccountService {
     public static Account login() throws Exception {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-        List<Account> loginAccountList = DB.getInstance().accountList;
 
         while(true) {
             System.out.print("Email: ");

@@ -10,6 +10,7 @@ public class Account extends DBEntity {
     protected String password;
 
     public Account(Account account) {
+        super(account.getId());
         this.email = account.email;
         this.phoneNumber = account.phoneNumber;
         this.password = account.password;

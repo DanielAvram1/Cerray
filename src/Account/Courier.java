@@ -2,6 +2,7 @@ package Account;
 
 import Delivery.Delivery;
 import db.DB;
+import db.DBService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,12 +19,19 @@ public class Courier extends Worker {
         this.meanOfTransport = meanOfTransport;
         this.deliveryIdList = new ArrayList<>();
 
+        String query = String.format("INSERT INTO COURIERS" +
+                " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', %d, '%s')",
+                        this.getId(), this.email, this.phoneNumber, this.password, this.firstName,
+                                this.lastName, this.salary, this.meanOfTransport);
+        DBService.getInstance().execute(query);
+
     }
 
-    public Courier(String id, String firstName, String lastName, String email, String phoneNumber, int salary, String meanOfTransport, String password) {
+    public Courier(String id, String firstName, String lastName, String email, String phoneNumber, int salary, String meanOfTransport, String password) throws SQLException {
         super(id, email, phoneNumber, password, firstName, lastName, salary);
         this.meanOfTransport = meanOfTransport;
         this.deliveryIdList = new ArrayList<>();
+
 
     }
 
@@ -32,6 +40,16 @@ public class Courier extends Worker {
                 rs.getString("PASSWORD"), rs.getString("FIRSTNAME"),
                 rs.getString("LASTNAME"), rs.getInt("SALARY"));
         this.meanOfTransport = rs.getString("MEAN_OF_TRANSPORT");
+        this.deliveryIdList = new ArrayList<>();
+
+        String query = "SELECT * FROM DELIVERIES WHERE COURIER_ID = ?";
+        ResultSet deliveryRs = DBService.getInstance().select(query, this.getId());
+        while(deliveryRs.next()){
+            try {
+                this.deliveryIdList.add(deliveryRs.getString("ID"));
+            } catch (SQLException ignored){}
+        }
+
     }
 
     @Override

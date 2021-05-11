@@ -20,6 +20,13 @@ public class Customer extends Person {
         super(account, firstName, lastName);
         this.defaultAddress = defaultAddress;
         this.orderIdList = new ArrayList<>();
+
+
+        String query = String.format("INSERT INTO CUSTOMERS" +
+                        " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                this.getId(), this.email, this.phoneNumber, this.password, this.firstName,
+                this.lastName, this.defaultAddress);
+        DBService.getInstance().execute(query);
     }
 
     public Customer(String id, String firstName, String lastName, String email, String phoneNumber, String password, String defaultAddress) {
@@ -30,7 +37,7 @@ public class Customer extends Person {
 
     public Customer(String id, String email, String phoneNumber, String password) {
         super(id, email, phoneNumber, password, "user", "user");
-        this.defaultAddress = "defaultAdress";
+        this.defaultAddress = "defaultAddress";
         this.orderIdList = new ArrayList<>();
     }
 
@@ -39,19 +46,31 @@ public class Customer extends Person {
                 rs.getString("PASSWORD"), rs.getString("FIRSTNAME"),
                 rs.getString("LASTNAME"));
         this.defaultAddress = rs.getString("DEFAULT_ADDRESS");
+        this.orderIdList = new ArrayList<>();
+
+        String query = "SELECT * FROM ORDERS WHERE CUSTOMER_ID = ?";
+        ResultSet orderRs = DBService.getInstance().select(query, this.getId());
+        while(orderRs.next()){
+            try {
+                this.orderIdList.add(orderRs.getString("ID"));
+            } catch (SQLException ignored){}
+        }
+
     }
 
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<Order>();
 
         for(String orderId: this.orderIdList) {
-            String query = "SELECT * FROM ORDERS WHERE ID = " + orderId;
-            ResultSet rs = DBService.getInstance().select(query);
+            String query = "SELECT * FROM ORDERS WHERE ID = ?";
+            ResultSet rs = DBService.getInstance().select(query, orderId);
             Order order = null;
             try {
+                rs.next();
                 order = new Order(rs);
             } catch (SQLException ignored) {};
-            orders.add(order);
+            if(order != null)
+                orders.add(order);
         }
 
         return orders;

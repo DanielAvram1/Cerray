@@ -4,17 +4,16 @@ import MenuItem.MenuItem;
 import MenuItem.MenuItemService;
 import Order.Order;
 import db.DB;
+import db.DBService;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.management.MemoryNotificationInfo;
 import java.util.*;
 import java.util.List;
 
 public class EstablishmentService {
 
-    private Establishment establishment;
+    private final Establishment establishment;
 
     public EstablishmentService(Establishment establishment) {
         this.establishment = establishment;
@@ -48,7 +47,7 @@ public class EstablishmentService {
             if(input.equals("back"))
                 contChooseEstablishmentSession = false;
             else {
-                int idx = 0;
+                int idx;
                 try {
                     idx = Integer.parseInt(input);
                 } catch (Exception e){
@@ -77,7 +76,7 @@ public class EstablishmentService {
             MenuItem currMenuItem = MenuItemService.getMenuItemById(menuItemId);
             if(currMenuItem == null)
                 continue;
-            System.out.printf("%s\t%f\t%x%n", currMenuItem.getName(), currMenuItem.getPrice(), menu.get(currMenuItem));
+            System.out.printf("%s\t%f\t%d\n", currMenuItem.getName(), currMenuItem.getPrice(), menu.get(currMenuItem.getId()));
         }
     }
 
@@ -93,7 +92,7 @@ public class EstablishmentService {
         SortedMap<String, Integer> orderItems = new TreeMap<>();
         double cost = 0;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
+        String input;
         while(true) {
             input = in.readLine();
             if(input.equals("done")) {
@@ -111,7 +110,7 @@ public class EstablishmentService {
 
                 if(args.length == 2) {
                     quan = Integer.parseInt(args[1]);
-                    if(quan < 1 || quan > newMenu.get(chosenMenuItem)) throw new Exception("prea mica sau mare cantitatea!");
+                    if(quan < 1 || quan > newMenu.get(chosenMenuItem.getId())) throw new Exception("prea mica sau mare cantitatea!");
                 }
 
                 cost += chosenMenuItem.getPrice() * quan;
@@ -141,11 +140,9 @@ public class EstablishmentService {
         if(input.equals("N"))
             return null;
         establishment.menu = newMenu;
-        establishment.income += cost;
-        Order order = new Order(new Date(), address, customer.getId(), establishment.getId(), orderItems);
-        DB.getInstance().orderList.add(order);
+        establishment.addIncome(cost);
 
-        return order;
+        return new Order(new Date(), address, customer.getId(), establishment.getId(), orderItems);
 
     }
 
@@ -156,33 +153,30 @@ public class EstablishmentService {
 
         List<Establishment> loginEstablishmentList = DB.getInstance().getEstablishmentList();
 
-        while(true) {
+        System.out.print("Denumire: ");
+        String name = in.readLine();
+
+        System.out.print("Adresa: ");
+        String address = in.readLine();
+
+        System.out.println("Tipul localului: ");
+        String type = in.readLine();
+
+        System.out.println("Descriere: ");
+        String description = in.readLine();
+
+        System.out.println("Ati introdus toate informatiile necesare. Confirmati inregistrarea? Y/N");
+
+        String input = in.readLine();
+        if(input.equals("N")) return null;;
+
+        Establishment establishment = new Establishment(account, name, address, type, description, new TreeMap<>());
+        loginEstablishmentList.add(establishment);
+
+        System.out.println("Bun venit in Cerray! Sunteti un Establishment inregistrat!");
+        return establishment;
 
 
-            System.out.print("Denumire: ");
-            String name = in.readLine();
-
-            System.out.print("Adresa: ");
-            String address = in.readLine();
-
-            System.out.println("Tipul localului: ");
-            String type = in.readLine();
-
-            System.out.println("Descriere: ");
-            String description = in.readLine();
-
-            System.out.println("Ati introdus toate informatiile necesare. Confirmati inregistrarea? Y/N");
-
-            String input = in.readLine();
-            if(input.equals("N")) break;
-
-            Establishment establishment = new Establishment(account, name, address, type, description, new TreeMap<>());
-            loginEstablishmentList.add(establishment);
-
-            System.out.println("Bun venit in Cerray! Sunteti un Establishment inregistrat!");
-            return establishment;
-        }
-        return null;
     }
 
     public void addMenuItem() throws Exception{
@@ -223,7 +217,6 @@ public class EstablishmentService {
 
         MenuItem menuItem = new MenuItem(name, price);
 
-        establishment.addMenuItem(menuItem.getId());
         establishment.addQuantity(menuItem.getId(), quan);
         System.out.println("Produsul " + name + " a fost introdus in meniul localului!");
 
@@ -251,7 +244,11 @@ public class EstablishmentService {
             }
         }
 
-        menu.remove(chosenMenuItem);
+        menu.remove(chosenMenuItem.getId());
+
+        String query = "DELETE FROM ESTABLISHMENT_ASOC_MENU_ITEM WHERE ESTABLISHMENT_ID = ? AND MENU_ITEM_ID = ?";
+        DBService.getInstance().execute(query, this.establishment.getId(), chosenMenuItem.getId());
+
         System.out.printf("Produsul %s a fost sters din meniu!%n", name);
 
 
@@ -299,6 +296,8 @@ public class EstablishmentService {
                             break;
                         }
                         establishment.menu.put(menuItem.getId(), quan);
+                        String query = "UPDATE ESTABLISHMENT_ASOC_MENU_ITEM SET QUANTITY = ? WHERE ESTABLISHMENT_ID = ? AND MENU_ITEM_ID = ?";
+                        DBService.getInstance().execute(query, quan, this.establishment.getId(), menuItem.getId());
                         cont = false;
 
                     } catch (Exception e) {

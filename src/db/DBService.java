@@ -2,6 +2,7 @@ package db;
 
 import javax.swing.plaf.nimbus.State;
 import java.sql.*;
+import java.util.Date;
 
 public class DBService {
 
@@ -23,6 +24,7 @@ public class DBService {
 
     private void openConnection() throws SQLException {
         connection = DriverManager.getConnection( url + "/" + database, user, password);
+        statement = connection.createStatement();
     }
     private void closeConnection() throws SQLException {
         connection.close();
@@ -36,8 +38,6 @@ public class DBService {
         try{
 
             openConnection();
-
-            statement = connection.createStatement();
 
             statement.execute("CREATE TABLE IF NOT EXISTS MENU_ITEMS (" +
                     "ID VARCHAR(255) PRIMARY KEY NOT NULL," +
@@ -57,6 +57,9 @@ public class DBService {
 
             statement.execute("CREATE TABLE IF NOT EXISTS ESTABLISHMENTS (" +
                     "ID VARCHAR(255) PRIMARY KEY NOT NULL," +
+                    "EMAIL VARCHAR(255) NOT NULL," +
+                    "PHONENUMBER VARCHAR(255)," +
+                    "PASSWORD VARCHAR(255) NOT NULL," +
                     "NAME VARCHAR(255) NOT NULL," +
                     "ADDRESS VARCHAR(255) NOT NULL," +
                     "TYPE VARCHAR(255)," +
@@ -71,8 +74,8 @@ public class DBService {
                     "ESTABLISHMENT_ID VARCHAR(255) NOT NULL," +
                     "CUSTOMER_ID VARCHAR(255) NOT NULL," +
                     "DELIVERED BOOLEAN NOT NULL," +
-                    "FOREIGN KEY (ESTABLISHMENT_ID) REFERENCES ESTABLISHMENTS(ID)," +
-                    "FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS(ID)" +
+                    "FOREIGN KEY (ESTABLISHMENT_ID) REFERENCES ESTABLISHMENTS(ID) ON DELETE CASCADE," +
+                    "FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS(ID) ON DELETE CASCADE" +
                     ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS COURIERS (" +
@@ -91,9 +94,9 @@ public class DBService {
                     "ORDER_ID VARCHAR(255) NOT NULL," +
                     "COURIER_ID VARCHAR(255) NOT NULL," +
                     "PICKED_DATE DATE NOT NULL," +
-                    "DELIVERY_DATE DATE NOT NULL," +
-                    "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID)," +
-                    "FOREIGN KEY (COURIER_ID) REFERENCES COURIERS(ID)" +
+                    "DELIVERY_DATE DATE," +
+                    "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID) ON DELETE CASCADE," +
+                    "FOREIGN KEY (COURIER_ID) REFERENCES COURIERS(ID) ON DELETE CASCADE" +
                     ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS ESTABLISHMENT_ASOC_MENU_ITEM (" +
@@ -101,8 +104,8 @@ public class DBService {
                     "MENU_ITEM_ID VARCHAR(255) NOT NULL," +
                     "QUANTITY INT NOT NULL," +
                     "PRIMARY KEY (ESTABLISHMENT_ID, MENU_ITEM_ID)," +
-                    "FOREIGN KEY (ESTABLISHMENT_ID) REFERENCES ESTABLISHMENTS(ID)," +
-                    "FOREIGN KEY (MENU_ITEM_ID) REFERENCES MENU_ITEMS(ID)" +
+                    "FOREIGN KEY (ESTABLISHMENT_ID) REFERENCES ESTABLISHMENTS(ID) ON DELETE CASCADE," +
+                    "FOREIGN KEY (MENU_ITEM_ID) REFERENCES MENU_ITEMS(ID) ON DELETE CASCADE" +
                     ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS ORDER_ASOC_MENU_ITEM (" +
@@ -110,39 +113,91 @@ public class DBService {
                     "MENU_ITEM_ID VARCHAR(255) NOT NULL," +
                     "QUANTITY INT NOT NULL," +
                     "PRIMARY KEY (ORDER_ID, MENU_ITEM_ID)," +
-                    "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID)," +
-                    "FOREIGN KEY (MENU_ITEM_ID) REFERENCES MENU_ITEMS(ID)" +
+                    "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID) ON DELETE CASCADE," +
+                    "FOREIGN KEY (MENU_ITEM_ID) REFERENCES MENU_ITEMS(ID) ON DELETE CASCADE" +
                     ")");
 
-            closeConnection();
+
         }catch(Exception e){ System.out.println(e);}
     }
 
     public ResultSet select(String sql){
         try{
-            openConnection();
-
             ResultSet rs = statement.executeQuery(sql);
 
-            closeConnection();
             return rs;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("select with no args " + e.getMessage());
         }
         return null;
     }
 
+
+    public ResultSet select(String sql, Object ...args){
+        try{
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            int cnt = 1;
+            for(Object arg: args) {
+
+                if (arg instanceof String)
+                    pstmt.setString(cnt, (String)arg);
+                if(arg instanceof Date)
+                    pstmt.setDate(cnt, (java.sql.Date)arg);
+                if(arg instanceof Integer)
+                    pstmt.setInt(cnt, (Integer)arg);
+                if(arg instanceof Double)
+                    pstmt.setDouble(cnt, (Double)arg);
+                if(arg instanceof Boolean)
+                    pstmt.setBoolean(cnt, (Boolean)arg);
+
+                if(arg == null)
+                    pstmt.setNull(cnt, Types.NULL);
+                cnt++;
+            }
+            return pstmt.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println("select with args " + e.getMessage());
+        }
+        return null;
+    }
+
+
     public void execute(String sql){
         try{
-            openConnection();
-
             statement.execute(sql);
-
-            closeConnection();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
+
+    public void execute(String sql, Object ...args){
+        try{
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            int cnt = 1;
+            for(Object arg: args) {
+                if (arg instanceof String)
+                    pstmt.setString(cnt, (String)arg);
+                if(arg instanceof Date)
+                    pstmt.setDate(cnt,new java.sql.Date(((Date)arg).getTime()));
+                if(arg instanceof Integer)
+                    pstmt.setInt(cnt, (Integer)arg);
+                if(arg instanceof Double)
+                    pstmt.setDouble(cnt, (Double)arg);
+                if(arg instanceof Boolean)
+                    pstmt.setBoolean(cnt, (Boolean)arg);
+
+                if(arg == null)
+                    pstmt.setNull(cnt, Types.NULL);
+                cnt++;
+            }
+            pstmt.execute();
+
+        } catch (SQLException e) {
+            System.out.println(args[0] + e.getMessage());
+        }
+    }
+
 
 }

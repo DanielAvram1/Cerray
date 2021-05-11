@@ -32,6 +32,11 @@ public class Delivery extends DBEntity {
         this.pickedDate = pickedDate;
         this.deliveryDate = deliveryDate;
 
+        String query = "INSERT INTO DELIVERIES" +
+                        " VALUES (?, ?, ?, ?, ?)";
+
+        DBService.getInstance().execute(query, this.getId(), this.orderId, this.courierId, this.pickedDate, this.deliveryDate);
+
     }
 
     public Delivery(ResultSet rs) throws SQLException {
@@ -43,8 +48,9 @@ public class Delivery extends DBEntity {
     }
 
     public Order getOrder() throws SQLException {
-        String query = "SELECT * FROM ORDERS WHERE ID = " + this.orderId;
-        ResultSet rs = DBService.getInstance().select(query);
+        String query = "SELECT * FROM ORDERS WHERE ID = ?";
+        ResultSet rs = DBService.getInstance().select(query, this.orderId);
+        rs.next();
         return new Order(rs);
     }
 
@@ -53,9 +59,10 @@ public class Delivery extends DBEntity {
     }
 
     public Courier getCourier() {
-        String query = "SELECT * FROM COURIERS WHERE ID = " + this.orderId;
-        ResultSet rs = DBService.getInstance().select(query);
+        String query = "SELECT * FROM COURIERS WHERE ID = ?";
+        ResultSet rs = DBService.getInstance().select(query, this.courierId);
         try{
+            rs.next();
             return new Courier(rs);
         }catch (SQLException ignored) {
             return null;
@@ -71,7 +78,11 @@ public class Delivery extends DBEntity {
     }
 
     public void setDeliveryDate(Date deliveryDate) {
+
         this.deliveryDate = deliveryDate;
+
+        String query = "UPDATE DELIVERIES SET DELIVERY_DATE = ?";
+        DBService.getInstance().execute(query, new Date());
     }
 
 

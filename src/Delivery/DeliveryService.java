@@ -13,11 +13,7 @@ public class DeliveryService {
 
     static public Delivery makeDelivery(Courier courier) throws Exception{
         Order order = OrderService.chooseOrder();
-
         Delivery delivery = new Delivery(order.getId(), courier.getId(), new Date(), null);
-
-        DB.getInstance().deliveryList.add(delivery);
-
         return delivery;
     }
 

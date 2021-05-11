@@ -11,11 +11,11 @@ public class MenuItemService {
     MenuItem menuItem;
 
     public static MenuItem getMenuItemById(String id) {
-        String query = "SELECT * FROM MENU_ITEMS WHERE ID = " + id;
-        ResultSet rs = DBService.getInstance().select(query);
+        String query = "SELECT * FROM MENU_ITEMS WHERE ID = ?";
+        ResultSet rs = DBService.getInstance().select(query, id);
         try {
-            MenuItem menuItem = new MenuItem(rs);
-            return menuItem;
+            rs.next();
+            return new MenuItem(rs);
         } catch (SQLException ignored) {
             return null;
         }

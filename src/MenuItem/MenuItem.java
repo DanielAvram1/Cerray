@@ -1,6 +1,7 @@
 package MenuItem;
 
 import db.DBEntity;
+import db.DBService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,12 +15,23 @@ public class MenuItem extends DBEntity implements Comparable {
         super();
         this.name = name;
         this.price = price;
+
+        String query = "INSERT INTO MENU_ITEMS" +
+                " VALUES (?, ?, ?)";
+
+        DBService.getInstance().execute(query, this.getId(), this.name, this.price);
+
     }
 
     public MenuItem(String name) {
         super();
         this.name = name;
         this.price = 0;
+
+        String query = "INSERT INTO MENU_ITEMS" +
+                " VALUES (?, ?, ?)";
+
+        DBService.getInstance().execute(query, this.getId(), this.name, this.price);
     }
 
     public MenuItem(MenuItem menuItem) {
@@ -30,7 +42,7 @@ public class MenuItem extends DBEntity implements Comparable {
     public MenuItem(ResultSet rs) throws SQLException {
         super(rs.getString("ID"));
         this.name = rs.getString("NAME");
-        this.price = rs.getDouble("PRICE");
+        this.price = rs.getFloat("PRICE");
     }
 
     public String getName() {
@@ -38,6 +50,10 @@ public class MenuItem extends DBEntity implements Comparable {
     }
 
     public void setName(String name) {
+
+        String query = "UPDATE MENU_ITEMS SET NAME = ? WHERE ID = ?";
+        DBService.getInstance().execute(query, name, this.getId());
+
         this.name = name;
     }
 
@@ -46,6 +62,10 @@ public class MenuItem extends DBEntity implements Comparable {
     }
 
     public void setPrice(double price) {
+
+        String query = "UPDATE MENU_ITEMS SET PRICE = ? WHERE ID = ?";
+        DBService.getInstance().execute(query, price, this.getId());
+
         this.price = price;
     }
 
@@ -60,7 +80,7 @@ public class MenuItem extends DBEntity implements Comparable {
     @Override
     public int compareTo(Object o) {
         MenuItem menuItem = (MenuItem)o;
-        
+
         return this.getId().compareTo(menuItem.getId());
     }
 }

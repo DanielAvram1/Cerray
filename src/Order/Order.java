@@ -27,6 +27,11 @@ public class Order extends DBEntity {
         this.customerId = customerId;
         this.establishmentId = establishmentId;
         this.delivered = false;
+
+        String query = "INSERT INTO ORDERS" +
+                " VALUES (?, ?, ?, ?, ?, ?)";
+
+        DBService.getInstance().execute(query, this.getId(), this.date, this.address, this.establishmentId, this.customerId, this.delivered);
     }
 
     public Order(ResultSet rs) throws SQLException {
@@ -39,11 +44,11 @@ public class Order extends DBEntity {
 
         this.menuItemIdList = new TreeMap<>();
 
-        String query = "SELECT MENU_ITEM_ID, QUANTITY " +
-                "FROM ORDER_ASOC_MENU_ITEM" +
-                "WHERE ORDER_ID = " + this.getId();
+        String query = "SELECT * " +
+                "FROM ORDER_ASOC_MENU_ITEM " +
+                "WHERE ORDER_ID = ?";
 
-        ResultSet menuItemRs = DBService.getInstance().select(query);
+        ResultSet menuItemRs = DBService.getInstance().select(query, this.getId());
 
         while(menuItemRs.next()) {
             try {
@@ -61,9 +66,10 @@ public class Order extends DBEntity {
     }
 
     public Establishment getEstablishment() {
-        String query = "SELECT * FROM ESTABLISHMENTS WHERE ID = " + this.establishmentId;
-        ResultSet rs = DBService.getInstance().select(query);
+        String query = "SELECT * FROM ESTABLISHMENTS WHERE ID = ?";
+        ResultSet rs = DBService.getInstance().select(query, this.establishmentId);
         try {
+            rs.next();
             return new Establishment(rs);
         } catch (SQLException ignored){
             return null;
@@ -71,9 +77,10 @@ public class Order extends DBEntity {
     }
 
     public Customer getReceiver() {
-        String query = "SELECT * FROM CUSTOMERS WHERE ID = " + this.customerId;
-        ResultSet rs = DBService.getInstance().select(query);
+        String query = "SELECT * FROM CUSTOMERS WHERE ID = ?";
+        ResultSet rs = DBService.getInstance().select(query, this.customerId);
         try{
+            rs.next();
             return new Customer(rs);
         } catch (SQLException ignored) {
             return null;
@@ -86,6 +93,10 @@ public class Order extends DBEntity {
 
 
     public void setDelivered(boolean delivered) {
+
+        String query = "UPDATE ORDERS SET DELIVERED = TRUE WHERE ID = ?";
+        DBService.getInstance().execute(query, this.getId());
+
         this.delivered = delivered;
     }
 

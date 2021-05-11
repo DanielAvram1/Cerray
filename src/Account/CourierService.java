@@ -26,8 +26,6 @@ public class CourierService {
     static public Courier register(Account account) throws Exception{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        List<Account> accountList = DB.getInstance().accountList;
-
         while(true) {
 
 
@@ -45,7 +43,6 @@ public class CourierService {
             if(input.equals("N")) break;
 
             Courier courier = new Courier(account, firstName, lastName, meanOfTransport);
-            accountList.add(courier);
 
             System.out.println("Bun venit in Cerray! Sunteti un Courier inregistrat!");
             return courier;
@@ -63,13 +60,14 @@ public class CourierService {
         for(int i = 0; i<  courier.deliveryIdList.size(); i++){
             String query = "SELECT * " +
                     "FROM DELIVERIES " +
-                    "WHERE COURIER_ID = " + this.courier.getId();
-            ResultSet rs = DBService.getInstance().select(query);
+                    "WHERE ID = ?";
+            ResultSet rs = DBService.getInstance().select(query, this.courier.deliveryIdList.get(i));
             Delivery delivery = null;
             try {
+                rs.next();
                 delivery = new Delivery(rs);
             } catch (SQLException ignored) {}
-            System.out.println(delivery);
+            System.out.println(i + ": " + delivery);
         }
         return true;
     }
@@ -79,10 +77,11 @@ public class CourierService {
         List<Delivery> undeliveredDeliveryList = new ArrayList<>();
 
         for(String deliveryId: courier.deliveryIdList){
-            String query = "SELECT * FROM DELIVERIES WHERE ID = " + deliveryId;
-            ResultSet rs = DBService.getInstance().select(query);
+            String query = "SELECT * FROM DELIVERIES WHERE ID = ?";
+            ResultSet rs = DBService.getInstance().select(query, deliveryId);
             Delivery currDelivery = null;
             try{
+                rs.next();
                 currDelivery = new Delivery(rs);
             } catch (SQLException ignored) {}
             if(currDelivery.getDeliveryDate() == null)
@@ -119,8 +118,9 @@ public class CourierService {
 
                 Delivery delivery = null;
                 try{
-                    String query = "SELECT * FROM DELIVERIES WHERE ID = " + courier.deliveryIdList.get(idx - 1);
-                    ResultSet rs = DBService.getInstance().select(query);
+                    String query = "SELECT * FROM DELIVERIES WHERE ID = ?";
+                    ResultSet rs = DBService.getInstance().select(query, courier.deliveryIdList.get(idx - 1));
+                    rs.next();
                     delivery = new Delivery(rs);
                 }catch (SQLException ignored){};
                 if(delivery == null) {
